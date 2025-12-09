@@ -7,6 +7,37 @@ import Link from "next/link"
 import Image from "next/image"
 import { Clock } from "lucide-react"
 
+function formatDay(day: string) {
+    // Map text days to numbers or standard format
+    // "Thứ Hai" -> "Thứ 2"
+    // "Thứ Ba" -> "Thứ 3"
+    // ...
+    // "Chủ Nhật" -> "Chủ Nhật"
+    const map: Record<string, string> = {
+        "Hai": "2",
+        "Ba": "3",
+        "Tư": "4", 
+        "Năm": "5",
+        "Sáu": "6",
+        "Bảy": "7"
+    }
+
+    if (day === "Chủ Nhật" || day === "CN") return "Chủ Nhật"
+    
+    // Check if it's already "Thứ 2", "Thứ 3" etc
+    if (day.match(/Thứ \d+/)) return day
+
+    // Handle "Thứ Hai", "Thứ Ba"
+    const parts = day.split(" ")
+    if (parts.length === 2 && parts[0] === "Thứ") {
+        const num = map[parts[1]]
+        if (num) return `Thứ ${num}`
+    }
+    
+    // Fallback or just return original
+    return day
+}
+
 export default function SchedulePage() {
   const [data, setData] = useState<ScheduleItem[]>([])
   const [loading, setLoading] = useState(true)
@@ -54,7 +85,7 @@ export default function SchedulePage() {
                             }
                         `}
                     >
-                        {item.day === "CN" ? "Chủ Nhật" : `Thứ ${parseInt(item.day.replace("T", ""))}`}
+                        {formatDay(item.day)}
                         <span className="block text-xs opacity-70 font-normal">
                              {item.date}/{item.month}
                         </span>

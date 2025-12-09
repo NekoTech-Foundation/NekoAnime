@@ -16,6 +16,18 @@ const nextConfig: NextConfig = {
         protocol: 'https',
         hostname: 'animevietsub.show',
       },
+      {
+        protocol: 'https',
+        hostname: 'cdn.myanimelist.net',
+      },
+      {
+        protocol: 'https',
+        hostname: 's199.imacdn.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'i.ytimg.com',
+      }
     ],
   },
 };
