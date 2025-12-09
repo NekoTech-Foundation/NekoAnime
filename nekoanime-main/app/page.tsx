@@ -47,11 +47,11 @@ export default function Home() {
                 {/* Schedule */}
                 <ScheduleSection data={data.schedule} />
 
-                {/* Upcoming */}
-                <UpcomingSection data={data.preRelease} />
-
                 {/* Latest Updates & Lists */}
                 <FeaturedSection data={data} />
+
+                {/* Upcoming */}
+                <UpcomingSection data={data.preRelease} />
           </div>
 
           {/* Sidebar (Right) */}

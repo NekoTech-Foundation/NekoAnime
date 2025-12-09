@@ -41,10 +41,10 @@ export function ExtensionCheck({ children }: { children: React.ReactNode }) {
             </div>
             <h2 className="text-2xl font-bold text-white mb-2">Chưa cài đặt Extension</h2>
             <p className="text-gray-400 mb-6">
-                Bạn cần cài đặt hoặc cập nhật AnimeVsub Helper Extension để sử dụng ứng dụng này.
+                Bạn cần cài đặt hoặc cập nhật Extension NekoAnime Helper để sử dụng ứng dụng này.
             </p>
             <a
-                href="https://anime-vsub.github.io"
+                href="https://github.com/NekoTech-Foundation/NekoAnime-Extension"
                 target="_blank"
                 rel="noreferrer"
                 className="bg-indigo-600 hover:bg-indigo-500 text-white px-6 py-2 rounded-lg font-medium transition-colors"

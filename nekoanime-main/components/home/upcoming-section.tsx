@@ -50,7 +50,7 @@ export function UpcomingSection({ data }: UpcomingSectionProps) {
       <GlassPanel className="bg-black/40 backdrop-blur-xl border-white/10 p-0 overflow-hidden relative group">
          <div 
             ref={scrollRef}
-            className="flex overflow-x-auto gap-4 p-6 scrollbar-hide snap-x"
+            className="flex overflow-x-auto gap-4 p-6 snap-x [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
          >
             {data.map((anime, i) => (
                 <Link 
