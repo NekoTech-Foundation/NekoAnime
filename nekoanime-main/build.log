@@ -1,0 +1,50 @@
+$ next build
+ ΓÜá Warning: Next.js inferred your workspace root, but it may not be correct.
+ We detected multiple lockfiles and selected the directory of C:\Users\sangt\package-lock.json as the root directory.
+ To silence this warning, set `turbopack.root` in your Next.js config, or consider removing one of the lockfiles if it's not needed.
+   See https://nextjs.org/docs/app/api-reference/config/next-config-js/turbopack#root-directory for more information.
+ Detected additional lockfiles: 
+   * C:\Users\sangt\Documents\NekoAnime\desktop-web-main\next-app\bun.lock
+   * C:\Users\sangt\Documents\NekoAnime\desktop-web-main\bun.lockb
+
+   Γû▓ Next.js 16.0.8 (Turbopack)
+
+   Creating an optimized production build ...
+
+> Build error occurred
+Error: Turbopack build failed with 1 errors:
+./Documents/NekoAnime/desktop-web-main/next-app/app/phim/[...slug]/page.tsx:7:25
+Ecmascript file had an error
+   5 | // Dynamically import the Client Component with SSR disabled
+   6 | // This prevents 'document is not defined' errors caused by browser-only libraries
+>  7 | const AnimeDetailView = dynamic(() => import("@/components/anime/anime-detail-view"), {
+     |                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+>  8 |     ssr: false,
+     | ^^^^^^^^^^^^^^^
+>  9 |     loading: () => (
+     | ^^^^^^^^^^^^^^^
+> 10 |         <div className="flex h-[50vh] items-center justify-center">
+     | ^^^^^^^^^^^^^^^
+> 11 |              <div className="flex flex-col items-center gap-4">
+     | ^^^^^^^^^^^^^^^
+> 12 |                  <Loader2 className="w-10 h-10 text-indigo-500 animate-spin" />
+     | ^^^^^^^^^^^^^^^
+> 13 |                  <p className="text-gray-400">─Éang tß║úi...</p>
+     | ^^^^^^^^^^^^^^^
+> 14 |             </div>
+     | ^^^^^^^^^^^^^^^
+> 15 |         </div>
+     | ^^^^^^^^^^^^^^^
+> 16 |     )
+     | ^^^^^^^^^^^^^^^
+> 17 | })
+     | ^^^
+  18 |
+  19 | interface PageProps {
+  20 |     params: {
+
+`ssr: false` is not allowed with `next/dynamic` in Server Components. Please move it into a Client Component.
+
+
+    at <unknown> (./Documents/NekoAnime/desktop-web-main/next-app/app/phim/[...slug]/page.tsx:7:25)
+error: script "build" exited with code 1
