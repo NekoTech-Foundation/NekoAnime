@@ -160,16 +160,6 @@ export function NPlayer({ episode, poster }: NPlayerProps) {
             )}
 
             {/* Source Indicator (Optional Debug) */}
-             <div className="absolute top-2 right-2 flex flex-col items-end gap-1 pointer-events-none">
-                 <div className="px-2 py-1 bg-black/50 text-white text-xs rounded">
-                    Source: {currentSourceIdx + 1}/{sources.length} ({activeSource?.type})
-                 </div>
-                 <div className={`px-2 py-1 text-xs rounded transition-colors ${
-                     extReady ? "bg-green-500/50 text-green-100" : "bg-red-500/50 text-red-100"
-                 }`}>
-                     Ext: {extReady ? "Ready" : "Missing"}
-                 </div>
-             </div>
         </div>
     )
 }

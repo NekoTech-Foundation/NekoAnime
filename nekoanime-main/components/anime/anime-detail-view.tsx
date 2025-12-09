@@ -5,6 +5,7 @@ import { useAnimeData } from "@/hooks/use-anime-data"
 import { GlassPanel } from "@/components/ui/glass-panel"
 import { Play, Star, Eye, Clock, ArrowLeft, Loader2 } from "lucide-react"
 import Link from "next/link"
+import Image from "next/image"
 import { NPlayer } from "@/components/player/n-player"
 import { cn } from "@/lib/utils"
 
@@ -50,19 +51,66 @@ export default function AnimeDetailView({ slugParts }: AnimeDetailViewProps) {
     return (
         <div className="space-y-8 animate-in fade-in duration-500">
              {/* Player Section OR Banner */}
+             {/* Player Section OR Banner */}
             {isWatch && currentEpisode ? (
-                <div className="space-y-6">
-                     <div className="flex items-center gap-4">
-                         <Link href={`/phim/${seasonSlug}`} className="p-2 rounded-full bg-white/5 hover:bg-white/10 transition-colors">
-                             <ArrowLeft className="w-6 h-6 text-white" />
-                         </Link>
-                         <div>
-                             <h1 className="text-xl font-bold text-white">{detail.name}</h1>
-                             <p className="text-gray-400 text-sm">Đang phát: <span className="text-indigo-400 font-medium">{currentEpisode.name}</span></p>
+                <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+                    {/* Main Player Area */}
+                    <div className="lg:col-span-3 space-y-4">
+                         <div className="flex items-center gap-4 mb-2">
+                             <Link href={`/phim/${seasonSlug}`} className="p-2 rounded-full bg-white/5 hover:bg-white/10 transition-colors">
+                                 <ArrowLeft className="w-5 h-5 text-white" />
+                             </Link>
+                             <div className="min-w-0">
+                                 <h1 className="text-lg font-bold text-white truncate">{detail.name}</h1>
+                                 <p className="text-gray-400 text-xs truncate">Đang phát: <span className="text-indigo-400 font-medium">{currentEpisode.name}</span></p>
+                             </div>
                          </div>
-                     </div>
 
-                     <NPlayer episode={currentEpisode} poster={detail.poster || detail.image} />
+                         <NPlayer episode={currentEpisode} poster={detail.poster || detail.image} />
+                         
+                         {/* Mobile Info (visible below player) */}
+                         <GlassPanel className="p-4 lg:hidden">
+                            <h2 className="text-white font-bold mb-2">Thông tin phim</h2>
+                             <p className="text-sm text-gray-300 line-clamp-3">{detail.description}</p>
+                         </GlassPanel>
+                    </div>
+
+                    {/* Sidebar Episode List */}
+                    <div className="lg:col-span-1">
+                        <GlassPanel className="h-full max-h-[80vh] flex flex-col p-4 bg-black/40 backdrop-blur-xl border-white/10">
+                            <div className="mb-4 pb-2 border-b border-white/10 flex justify-between items-center">
+                                <h3 className="text-sm font-bold text-white uppercase flex items-center gap-2">
+                                    <Play className="w-4 h-4 text-indigo-400" />
+                                    Danh sách tập
+                                </h3>
+                                <span className="text-xs text-gray-500">{episodes.length} tập</span>
+                            </div>
+                            
+                            <div className="flex-1 overflow-y-auto custom-scrollbar pr-1 -mr-2">
+                                <div className="grid grid-cols-4 lg:grid-cols-3 gap-2">
+                                    {episodes.map(ep => {
+                                        const isActive = currentEpisode?.id === ep.id
+                                        return (
+                                        <Link
+                                                key={ep.id}
+                                                href={`/phim/${seasonSlug}/${ep.id}`}
+                                                className={cn(
+                                                    "h-9 flex items-center justify-center rounded text-xs font-medium transition-all border border-transparent",
+                                                    isActive
+                                                        ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/25 border-indigo-400/50'
+                                                        : 'bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white hover:border-white/10'
+                                                )}
+                                        >
+                                            {ep.name}
+                                        </Link>
+                                    )})}
+                                </div>
+                                {episodes.length === 0 && (
+                                    <div className="text-center text-gray-500 py-10 text-xs">Chưa có tập phim nào</div>
+                                )}
+                            </div>
+                        </GlassPanel>
+                    </div>
                 </div>
             ) : (
                 <div className="relative h-[40vh] md:h-[50vh] w-full rounded-3xl overflow-hidden">
@@ -78,7 +126,7 @@ export default function AnimeDetailView({ slugParts }: AnimeDetailViewProps) {
                     <div className="absolute bottom-0 left-0 w-full p-6 md:p-10 z-30 flex flex-col md:flex-row gap-8 items-end">
                         <div className="relative w-40 md:w-56 aspect-[2/3] rounded-xl overflow-hidden shadow-2xl border-2 border-white/10 shrink-0 hidden md:block">
                             {detail.image && (
-                            <img src={detail.image} alt={detail.name} className="w-full h-full object-cover" />
+                            <Image src={detail.image} alt={detail.name} fill className="object-cover" />
                             )}
                         </div>
 
@@ -130,33 +178,35 @@ export default function AnimeDetailView({ slugParts }: AnimeDetailViewProps) {
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <div className="lg:col-span-2 space-y-8">
-                     <GlassPanel className="p-6">
-                        <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
-                            <Play className="w-5 h-5 text-indigo-400" />
-                            Danh sách tập
-                        </h3>
-                        <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
-                           {episodes.map(ep => {
-                               const isActive = currentEpisode?.id === ep.id
-                               return (
-                               <Link
-                                    key={ep.id}
-                                    href={`/phim/${seasonSlug}/${ep.id}`}
-                                    className={cn(
-                                        "h-10 flex items-center justify-center rounded-lg text-sm font-medium transition-all border border-transparent",
-                                        isActive
-                                            ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/25 border-indigo-400/50'
-                                            : 'bg-white/5 text-gray-300 hover:bg-white/10 hover:text-white hover:border-white/10'
-                                    )}
-                               >
-                                   {ep.name}
-                               </Link>
-                           )})}
-                           {episodes.length === 0 && (
-                               <div className="col-span-full text-center text-gray-500 py-4">Chưa có tập phim nào</div>
-                           )}
-                        </div>
-                    </GlassPanel>
+                     {!isWatch && (
+                         <GlassPanel className="p-6">
+                            <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
+                                <Play className="w-5 h-5 text-indigo-400" />
+                                Danh sách tập
+                            </h3>
+                            <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
+                               {episodes.map(ep => {
+                                   const isActive = currentEpisode?.id === ep.id
+                                   return (
+                                   <Link
+                                        key={ep.id}
+                                        href={`/phim/${seasonSlug}/${ep.id}`}
+                                        className={cn(
+                                            "h-10 flex items-center justify-center rounded-lg text-sm font-medium transition-all border border-transparent",
+                                            isActive
+                                                ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/25 border-indigo-400/50'
+                                                : 'bg-white/5 text-gray-300 hover:bg-white/10 hover:text-white hover:border-white/10'
+                                        )}
+                                   >
+                                       {ep.name}
+                                   </Link>
+                               )})}
+                               {episodes.length === 0 && (
+                                   <div className="col-span-full text-center text-gray-500 py-4">Chưa có tập phim nào</div>
+                               )}
+                            </div>
+                        </GlassPanel>
+                     )}
 
                      <GlassPanel className="p-6">
                         <h3 className="text-xl font-bold text-white mb-4">Nội dung</h3>
@@ -194,7 +244,7 @@ export default function AnimeDetailView({ slugParts }: AnimeDetailViewProps) {
                                 <Link key={i} href={item.path || "#"} className="flex gap-3 group">
                                      <div className="w-16 h-24 rounded-lg overflow-hidden shrink-0 relative bg-white/5">
                                         {item.image && (
-                                            <img src={item.image} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                                            <Image src={item.image} alt={item.name} fill className="object-cover group-hover:scale-110 transition-transform duration-500" />
                                         )}
                                      </div>
                                      <div className="flex-1 min-w-0 py-1">
