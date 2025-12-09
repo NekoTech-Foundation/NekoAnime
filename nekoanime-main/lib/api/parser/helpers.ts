@@ -8,9 +8,10 @@ export function parserDom(html: string) {
 }
 
 export function getInfoAnchor(cheerio: Cheerio<Element>) {
+    const href = cheerio.attr("href") || ""
     return {
         name: cheerio.text().trim(),
-        href: cheerio.attr("href") || ""
+        href: getPathName(href)
     }
 }
 

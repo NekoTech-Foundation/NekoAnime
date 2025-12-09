@@ -11,6 +11,7 @@ import { motion, AnimatePresence } from "framer-motion"
 const NAV_ITEMS = [
   { label: "Trang chủ", href: "/", icon: Home },
   { label: "Tìm kiếm", href: "/tim-kiem", icon: Search },
+  { label: "Danh sách", href: "/danh-sach", icon: Menu },
   { label: "Lịch chiếu", href: "/lich-chieu", icon: Calendar },
   { label: "Bảng xếp hạng", href: "/bang-xep-hang", icon: Trophy },
 ]
