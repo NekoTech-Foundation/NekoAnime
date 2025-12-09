@@ -100,7 +100,7 @@ export function Spotlight({ items }: SpotlightProps) {
               </span>
             </div>
 
-            <h1 className="text-3xl md:text-4xl font-bold font-caveat text-white mb-3 drop-shadow-lg leading-tight line-clamp-1">
+            <h1 className="text-3xl md:text-4xl font-bold text-white mb-3 drop-shadow-lg leading-tight line-clamp-1">
               {item.name}
             </h1>
             

@@ -49,7 +49,7 @@ export default function AnimeDetailView({ slugParts }: AnimeDetailViewProps) {
         : null
 
     return (
-        <div className="space-y-8 animate-in fade-in duration-500">
+        <div className="space-y-8 animate-in fade-in duration-500 pt-6">
              {/* Player Section OR Banner */}
              {/* Player Section OR Banner */}
             {isWatch && currentEpisode ? (
@@ -113,7 +113,7 @@ export default function AnimeDetailView({ slugParts }: AnimeDetailViewProps) {
                     </div>
                 </div>
             ) : (
-                <div className="relative h-[40vh] md:h-[50vh] w-full rounded-3xl overflow-hidden">
+                <div className="relative min-h-[50vh] w-full rounded-3xl overflow-hidden flex items-end">
                     <div className="absolute inset-0 bg-black/60 z-10" />
                     {detail.poster && (
                         <div
@@ -123,7 +123,7 @@ export default function AnimeDetailView({ slugParts }: AnimeDetailViewProps) {
                     )}
                     <div className="absolute inset-0 bg-gradient-to-t from-gray-950 via-gray-950/60 to-transparent z-20" />
 
-                    <div className="absolute bottom-0 left-0 w-full p-6 md:p-10 z-30 flex flex-col md:flex-row gap-8 items-end">
+                    <div className="relative w-full p-6 md:p-10 z-30 flex flex-col md:flex-row gap-8 items-end">
                         <div className="relative w-40 md:w-56 aspect-[2/3] rounded-xl overflow-hidden shadow-2xl border-2 border-white/10 shrink-0 hidden md:block">
                             {detail.image && (
                             <Image src={detail.image} alt={detail.name} fill className="object-cover" />
@@ -131,7 +131,7 @@ export default function AnimeDetailView({ slugParts }: AnimeDetailViewProps) {
                         </div>
 
                         <div className="flex-1 text-white space-y-4 mb-2">
-                            <h1 className="text-3xl md:text-5xl font-bold font-caveat text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-400">
+                            <h1 className="text-3xl md:text-5xl font-bold text-white drop-shadow-md">
                                 {detail.name}
                             </h1>
                             <h2 className="text-lg text-gray-400 font-medium">{detail.othername}</h2>

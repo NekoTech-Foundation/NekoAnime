@@ -4,6 +4,7 @@ import { inter, caveat } from "@/lib/fonts";
 import "./globals.css";
 import { Sidebar } from "@/components/layout/sidebar";
 import { ExtensionCheck } from "@/components/layout/extension-check";
+import { Footer } from "@/components/layout/footer";
 
 export const metadata: Metadata = {
   title: "NekoAnime - Xem Anime Online",
@@ -24,6 +25,7 @@ export default function RootLayout({
         <main className="flex-1 ml-[calc(80px)] lg:ml-[250px] transition-all duration-300 p-6 lg:p-10 relative z-10">
             <ExtensionCheck>
               {children}
+              <Footer />
             </ExtensionCheck>
         </main>
 
