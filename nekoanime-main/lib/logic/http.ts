@@ -80,3 +80,6 @@ export async function httpPost(
 
   return response as Omit<typeof response, "data"> & { data: string }
 }
+
+export const get = httpGet
+export const post = httpPost

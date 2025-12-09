@@ -18,7 +18,7 @@ export async function getSchedule(): Promise<ScheduleItem[]> {
     const now = Date.now()
 
     return $("#sched-content > .Homeschedule")
-    .map((_i, item) => {
+    .map((_i: number, item: any) => {
       const $item = $(item)
       const day = $item.find(".Top > h1 > b").text().trim()
       const dateText = $item.find(".Top > h1").text().trim()
@@ -27,7 +27,7 @@ export async function getSchedule(): Promise<ScheduleItem[]> {
       const month = dateParts?.[3] || ""
 
       const items = $item.find(".MovieList .TPostMv")
-        .map((_j, subItem) => getInfoTPost($(subItem)))
+        .map((_j: number, subItem: any) => getInfoTPost($(subItem)))
         .toArray() as unknown as AnimeItem[]
 
       if (items.length === 0) return null

@@ -16,7 +16,7 @@ export async function getSearch(keyword: string, page: number = 1): Promise<Sear
 
     const items = $(".MovieList:eq(0)")
         .find(".TPostMv")
-        .map((_i, item) => getInfoTPost($(item), now))
+        .map((_i: number, item: any) => getInfoTPost($(item), now))
         .toArray() as unknown as AnimeItem[]
 
     const curPage = parseInt(
@@ -31,7 +31,7 @@ export async function getSearch(keyword: string, page: number = 1): Promise<Sear
     // Quick title extraction if needed
     const title = $(".breadcrumb:eq(0) > li")
         .slice(1)
-        .map((_i, item) => $(item).text().trim())
+        .map((_i: number, item: any) => $(item).text().trim())
         .toArray()
         .join(" ")
         .replace(/:/g, "")

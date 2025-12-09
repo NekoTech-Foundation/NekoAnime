@@ -16,7 +16,7 @@ export async function getRanking(type: string = ""): Promise<RankingItem[]> {
     // desktop-web-main uses: .bxh-movie-phimletv > .group
     
     return $(".bxh-movie-phimletv > .group")
-    .map((_i, item) => {
+    .map((_i: number, item: any) => {
       const $item = $(item)
       
       // Image
