@@ -8,6 +8,8 @@ import Link from "next/link"
 import Image from "next/image"
 import { NPlayer } from "@/components/player/n-player"
 import { cn } from "@/lib/utils"
+import type { Episode } from "@/lib/api/parser/episode"
+import type { AnimeItem } from "@/lib/api/parser/helpers"
 
 interface AnimeDetailViewProps {
     slugParts: string[]
@@ -45,7 +47,7 @@ export default function AnimeDetailView({ slugParts }: AnimeDetailViewProps) {
     }
 
     const currentEpisode = isWatch && episodes.length > 0
-        ? episodes.find(e => e.id === currentChap || e.id.endsWith(currentChap || "")) || episodes[0]
+        ? episodes.find((e: Episode) => e.id === currentChap || e.id.endsWith(currentChap || "")) || episodes[0]
         : null
 
     return (
@@ -88,7 +90,7 @@ export default function AnimeDetailView({ slugParts }: AnimeDetailViewProps) {
                             
                             <div className="flex-1 overflow-y-auto custom-scrollbar pr-1 -mr-2">
                                 <div className="grid grid-cols-4 lg:grid-cols-3 gap-2">
-                                    {episodes.map(ep => {
+                                {episodes.map((ep: Episode) => {
                                         const isActive = currentEpisode?.id === ep.id
                                         return (
                                         <Link
@@ -156,7 +158,7 @@ export default function AnimeDetailView({ slugParts }: AnimeDetailViewProps) {
                             </div>
 
                             <div className="flex gap-2 flex-wrap">
-                                {detail.genres.map(g => (
+                                {detail.genres.map((g: {name: string, href: string}) => (
                                     <Link key={g.href} href={g.href} className="px-3 py-1 rounded-lg bg-white/5 hover:bg-white/10 border border-white/5 transition-colors text-xs">
                                         {g.name}
                                     </Link>
@@ -185,7 +187,7 @@ export default function AnimeDetailView({ slugParts }: AnimeDetailViewProps) {
                                 Danh sách tập
                             </h3>
                             <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
-                               {episodes.map(ep => {
+                               {episodes.map((ep: Episode) => {
                                    const isActive = currentEpisode?.id === ep.id
                                    return (
                                    <Link
@@ -229,7 +231,7 @@ export default function AnimeDetailView({ slugParts }: AnimeDetailViewProps) {
                         <div className="space-y-3 text-sm">
                              <InfoRow label="Trạng thái" value={detail.status} />
                              <InfoRow label="Quốc gia" value={detail.countries?.map(c => c.name).join(", ")} />
-                             <InfoRow label="Đạo diễn" value={detail.authors?.map(A => A.name).join(", ")} />
+                             <InfoRow label="Đạo diễn" value={detail.authors?.map((A: {name: string}) => A.name).join(", ")} />
                              <InfoRow label="Studio" value={detail.studio} />
                              <InfoRow label="Ngôn ngữ" value={detail.language} />
                              <InfoRow label="Năm phát hành" value={detail.yearOf?.toString()} />
@@ -239,7 +241,7 @@ export default function AnimeDetailView({ slugParts }: AnimeDetailViewProps) {
                      <GlassPanel className="p-6">
                         <h3 className="text-lg font-bold text-white mb-4">Có thể bạn thích</h3>
                         <div className="space-y-4">
-                            {detail.related?.map((item, i) => {
+                            {detail.related?.map((item: AnimeItem, i: number) => {
                                 return (
                                 <Link key={i} href={item.path || "#"} className="flex gap-3 group">
                                      <div className="w-16 h-24 rounded-lg overflow-hidden shrink-0 relative bg-white/5">

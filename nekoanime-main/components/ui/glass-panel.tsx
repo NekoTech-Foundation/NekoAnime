@@ -5,6 +5,7 @@ import React from "react"
 interface GlassPanelProps extends React.HTMLAttributes<HTMLDivElement> {
   children: React.ReactNode
   variant?: "neko" | "default" | "heavy"
+  className?: string
 }
 
 export function GlassPanel({ className, children, variant = "default", ...props }: GlassPanelProps) {

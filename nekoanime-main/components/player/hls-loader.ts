@@ -28,7 +28,7 @@ interface LoaderStats {
 
 interface LoaderCallbacks {
     onSuccess: (response: { url: string; data: ArrayBuffer | string }, stats: LoaderStats, context: LoaderContext) => void;
-    onError: (error: Error | { code: number; text: string }, context: LoaderContext, networkDetails: unknown) => void;
+    onError: (error: Error | { code: number; text: string } | any, context?: any, networkDetails?: any) => void;
     onTimeout: (stats: LoaderStats, context: LoaderContext, networkDetails: unknown) => void;
     onProgress: (stats: LoaderStats, context: LoaderContext, data: ArrayBuffer | string, networkDetails: unknown) => void;
 }
