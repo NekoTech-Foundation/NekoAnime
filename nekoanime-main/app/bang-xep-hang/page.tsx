@@ -68,7 +68,8 @@ export default function RankingPage() {
                 <div className="p-10 text-center text-gray-500">Đang tải...</div>
             ) : (
                 <div className="space-y-4">
-                    {data.map((anime, i) => (
+                    {/* Limit to top 20 items to reduce lag/clutter as requested */}
+                    {data.slice(0, 20).map((anime, i) => (
                          <Link 
                             key={i}
                             href={anime.path || "#"}
@@ -99,7 +100,7 @@ export default function RankingPage() {
                                 <h3 className="text-white font-medium truncate group-hover:text-yellow-500 transition-colors">
                                     {anime.name}
                                 </h3>
-                                <p className="text-xs text-gray-400 truncate mb-1">
+                                <p className="text-xs text-gray-400 truncate mb-1 opacity-70">
                                     {anime.othername}
                                 </p>
                                 <div className="flex gap-3 text-xs text-gray-500">
@@ -108,6 +109,12 @@ export default function RankingPage() {
                             </div>
                         </Link>
                     ))}
+                    
+                    {data.length > 20 && (
+                        <div className="text-center py-4 text-xs text-gray-500">
+                            Hiển thị 20/{data.length} kết quả hàng đầu
+                        </div>
+                    )}
                 </div>
             )}
         </GlassPanel>

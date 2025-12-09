@@ -9,7 +9,7 @@ export interface SearchResult {
 }
 
 export async function getSearch(keyword: string, page: number = 1): Promise<SearchResult> {
-    const url = `/tim-kiem/${keyword}/trang-${page}.html`
+    const url = `/tim-kiem/${encodeURIComponent(keyword)}/trang-${page}.html`
     const { data: html } = await get(url)
     const $ = parserDom(html)
     const now = Date.now()
