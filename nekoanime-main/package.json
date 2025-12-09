@@ -13,6 +13,7 @@
     "cheerio": "^1.1.2",
     "client-ext-animevsub-helper": "^1.0.45",
     "clsx": "^2.1.1",
+    "dayjs": "^1.11.19",
     "framer-motion": "^12.23.25",
     "htmlparser2": "^10.0.0",
     "lucide-react": "^0.556.0",

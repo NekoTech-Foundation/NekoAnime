@@ -3,7 +3,7 @@
 interface LoaderContext {
     url: string;
     responseType?: string;
-    frag?: any; // Hls.js Fragment
+    frag?: { url: string; [key: string]: unknown }; // Hls.js Fragment
 }
 
 interface LoaderConfig {
@@ -28,9 +28,9 @@ interface LoaderStats {
 
 interface LoaderCallbacks {
     onSuccess: (response: { url: string; data: ArrayBuffer | string }, stats: LoaderStats, context: LoaderContext) => void;
-    onError: (error: any, context: LoaderContext, networkDetails: any) => void;
-    onTimeout: (stats: LoaderStats, context: LoaderContext, networkDetails: any) => void;
-    onProgress: (stats: LoaderStats, context: LoaderContext, data: ArrayBuffer | string, networkDetails: any) => void;
+    onError: (error: Error | { code: number; text: string }, context: LoaderContext, networkDetails: unknown) => void;
+    onTimeout: (stats: LoaderStats, context: LoaderContext, networkDetails: unknown) => void;
+    onProgress: (stats: LoaderStats, context: LoaderContext, data: ArrayBuffer | string, networkDetails: unknown) => void;
 }
 
 interface NekoHelperResponse {
@@ -44,7 +44,7 @@ interface NekoHelperResponse {
 declare global {
     interface Window {
        NekoHelper?: {
-           fetch: (url: string, options?: any) => Promise<NekoHelperResponse>;
+           fetch: (url: string, options?: RequestInit) => Promise<NekoHelperResponse>;
        }
     }
 }
@@ -54,7 +54,7 @@ export class HlsExtensionLoader {
     config: LoaderConfig | null;
     stats: LoaderStats;
     callbacks: LoaderCallbacks | null;
-    retryTimeout: any; // Timer ID
+    retryTimeout: ReturnType<typeof setTimeout> | null; // Timer ID
     retryDelay: number;
 
     constructor(config: LoaderConfig) {
@@ -141,7 +141,7 @@ export class HlsExtensionLoader {
             // 2. Fetch via Extension
             // Wait for NekoHelper to be valid (max 5 seconds)
             let attempts = 0;
-            while (typeof (window as any).NekoHelper === 'undefined' && attempts < 50) {
+            while (typeof window.NekoHelper === 'undefined' && attempts < 50) {
                 if (attempts % 10 === 0) console.log(`[HlsLoader] Waiting for Extension... (${attempts}/50)`);
                 await new Promise(resolve => setTimeout(resolve, 100)); // 100ms wait
                 attempts++;

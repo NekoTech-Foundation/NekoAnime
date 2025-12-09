@@ -4,6 +4,7 @@
 import { useHomeData } from "@/hooks/use-home-data"
 import { ScheduleSection } from "@/components/home/schedule-section"
 import { RankingSection } from "@/components/home/ranking-section"
+import { UpcomingSection } from "@/components/home/upcoming-section"
 import { FeaturedSection } from "@/components/home/featured-section"
 import { Spotlight } from "@/components/home/spotlight"
 import { GlassPanel } from "@/components/ui/glass-panel"
@@ -45,6 +46,9 @@ export default function Home() {
                 
                 {/* Schedule */}
                 <ScheduleSection data={data.schedule} />
+
+                {/* Upcoming */}
+                <UpcomingSection data={data.preRelease} />
 
                 {/* Latest Updates & Lists */}
                 <FeaturedSection data={data} />

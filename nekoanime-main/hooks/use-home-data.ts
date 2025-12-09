@@ -11,6 +11,7 @@ export function useHomeData() {
     thisSeason: AnimeItem[]
     schedule: ScheduleItem[]
     ranking: AnimeItem[]
+    preRelease: AnimeItem[]
   } | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)

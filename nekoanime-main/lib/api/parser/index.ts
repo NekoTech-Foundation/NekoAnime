@@ -1,6 +1,7 @@
 
 import { parserDom, getInfoTPost, type AnimeItem } from "./helpers"
 export type { AnimeItem } from "./helpers"
+export { parserDom, getInfoTPost, getPathName } from "./helpers"
 
 export interface ScheduleItem {
     day: string
@@ -33,6 +34,11 @@ export function parseHome(html: string) {
     .toArray() as unknown as AnimeItem[]
 
   const nominate = $("#hot-home .TPostMv")
+    .map((_i, item) => getInfoTPost($(item)))
+    .toArray() as unknown as AnimeItem[]
+
+  // Upcoming / Sắp chiếu #new-home
+  const preRelease = $("#new-home .TPostMv")
     .map((_i, item) => getInfoTPost($(item)))
     .toArray() as unknown as AnimeItem[]
 
@@ -73,6 +79,7 @@ export function parseHome(html: string) {
     latestUpdate,
     nominate,
     schedule,
-    ranking
+    ranking,
+    preRelease
   }
 }
