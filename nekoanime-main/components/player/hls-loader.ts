@@ -1,14 +1,63 @@
 
 
-export class HlsExtensionLoader {
-    context: any;
-    config: any;
-    stats: any;
-    callbacks: any;
-    retryTimeout: number | any;
-    retryDelay: number | any;
+interface LoaderContext {
+    url: string;
+    responseType?: string;
+    frag?: any; // Hls.js Fragment
+}
 
-    constructor(config: any) {
+interface LoaderConfig {
+    retryDelay: number;
+    // Add other known config properties if needed
+}
+
+interface LoaderStats {
+    trequest: number;
+    retry: number;
+    tfirst: number;
+    tload: number;
+    loaded: number;
+    total: number;
+    chunkCount: number;
+    bwEstimate: number;
+    loading: { start: number; first: number; end: number };
+    buffering: { start: number; first: number; end: number };
+    parsing: { start: number; end: number };
+    aborted: boolean;
+}
+
+interface LoaderCallbacks {
+    onSuccess: (response: { url: string; data: ArrayBuffer | string }, stats: LoaderStats, context: LoaderContext) => void;
+    onError: (error: any, context: LoaderContext, networkDetails: any) => void;
+    onTimeout: (stats: LoaderStats, context: LoaderContext, networkDetails: any) => void;
+    onProgress: (stats: LoaderStats, context: LoaderContext, data: ArrayBuffer | string, networkDetails: any) => void;
+}
+
+interface NekoHelperResponse {
+    success: boolean;
+    status: number;
+    data?: string; // Base64 string
+    error?: string;
+    url?: string;
+}
+
+declare global {
+    interface Window {
+       NekoHelper?: {
+           fetch: (url: string, options?: any) => Promise<NekoHelperResponse>;
+       }
+    }
+}
+
+export class HlsExtensionLoader {
+    context: LoaderContext | null;
+    config: LoaderConfig | null;
+    stats: LoaderStats;
+    callbacks: LoaderCallbacks | null;
+    retryTimeout: any; // Timer ID
+    retryDelay: number;
+
+    constructor(config: LoaderConfig) {
         console.log("%c[HlsExtensionLoader] CONSTRUCTOR CALLED", "background: purple; color: white; font-size: 14px;");
         this.context = null;
         this.config = config;
@@ -28,9 +77,11 @@ export class HlsExtensionLoader {
              parsing: { start: 0, end: 0 },
              aborted: false
         };
+        this.retryDelay = 0;
+        this.retryTimeout = null;
     }
 
-    load(context: any, config: any, callbacks: any) {
+    load(context: LoaderContext, config: LoaderConfig, callbacks: LoaderCallbacks) {
         this.context = context;
         this.config = config;
         this.callbacks = callbacks;
@@ -53,7 +104,8 @@ export class HlsExtensionLoader {
         this._loadInternal(this.stats);
     }
 
-    async _loadInternal(stats: any) {
+    async _loadInternal(stats: LoaderStats) {
+        if (!this.context) return;
         const url = this.context.url;
 
         try {
@@ -80,7 +132,7 @@ export class HlsExtensionLoader {
                     data = new TextDecoder().decode(buffer);
                 }
 
-                if (this.callbacks) {
+                if (this.callbacks && this.context) {
                     this.callbacks.onSuccess({ url: url, data: data }, stats, this.context);
                 }
                 return;
@@ -95,7 +147,6 @@ export class HlsExtensionLoader {
                 attempts++;
             }
 
-            // @ts-expect-error - NekoHelper is injected global
             if (typeof window.NekoHelper === 'undefined') {
                  console.warn("[HlsLoader] NekoHelper Extension not found after waiting 5s!");
                  throw new Error("NekoHelper Extension not found");
@@ -106,7 +157,6 @@ export class HlsExtensionLoader {
             stats.tfirst = performance.now();
             stats.loading.first = performance.now();
 
-            // @ts-expect-error - NekoHelper is injected global
             const response = await window.NekoHelper.fetch(url, {
                 headers: {
                      "Referer": "https://animevietsub.show/"
@@ -160,7 +210,7 @@ export class HlsExtensionLoader {
                  data = new TextDecoder().decode(bytes);
             }
 
-            if (this.callbacks) {
+            if (this.callbacks && this.context) {
                 console.log("[HlsLoader] Success Stats:", JSON.stringify(stats));
                 this.callbacks.onSuccess({
                     url: response.url || url,
@@ -172,7 +222,7 @@ export class HlsExtensionLoader {
             console.error("[HlsLoader] Error:", error);
             const err = error instanceof Error ? error : new Error(String(error));
 
-            if (this.callbacks) {
+            if (this.callbacks && this.context) {
                 this.callbacks.onError({
                     type: 'networkError', // Hls.js ErrorType.NETWORK_ERROR
                     details: 'fragLoadError', // Hls.js ErrorDetails.FRAG_LOAD_ERROR

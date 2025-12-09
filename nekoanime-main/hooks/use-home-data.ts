@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from "react"
 import { httpGet } from "@/lib/logic/http"
-import { parseHome, type AnimeItem } from "@/lib/api/parser"
+import { parseHome, type AnimeItem, type ScheduleItem } from "@/lib/api/parser"
 
 export function useHomeData() {
   const [data, setData] = useState<{
@@ -9,6 +9,8 @@ export function useHomeData() {
     latestUpdate: AnimeItem[]
     nominate: AnimeItem[]
     thisSeason: AnimeItem[]
+    schedule: ScheduleItem[]
+    ranking: AnimeItem[]
   } | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)

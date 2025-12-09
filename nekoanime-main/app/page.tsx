@@ -1,35 +1,62 @@
 
-import { GlassPanel } from "@/components/ui/glass-panel";
-import { Play } from "lucide-react";
-import { FeaturedSection } from "@/components/home/featured-section";
+"use client"
+
+import { useHomeData } from "@/hooks/use-home-data"
+import { ScheduleSection } from "@/components/home/schedule-section"
+import { RankingSection } from "@/components/home/ranking-section"
+import { FeaturedSection } from "@/components/home/featured-section"
+import { Spotlight } from "@/components/home/spotlight"
+import { GlassPanel } from "@/components/ui/glass-panel"
 
 export default function Home() {
-  return (
-    <div className="space-y-8">
-      {/* Hero Section */}
-      <section className="relative h-[400px] rounded-3xl overflow-hidden group">
-        <div className="absolute inset-0 bg-gradient-to-t from-gray-900 via-gray-900/40 to-transparent z-10" />
-        <div
-          className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-105"
-          style={{ backgroundImage: 'url(https://images7.alphacoders.com/132/1327170.png)' }} // Placeholder
-        />
+  const { data, loading, error } = useHomeData()
 
-        <div className="absolute bottom-0 left-0 p-8 z-20 max-w-2xl">
-           <GlassPanel className="p-6 backdrop-blur-xl bg-black/40 border-white/10">
-              <h1 className="text-4xl font-bold font-caveat text-white mb-2">Frieren: Beyond Journey&apos;s End</h1>
-              <p className="text-gray-200 line-clamp-2 mb-4">
-                Pháp sư yêu tinh Frieren và những người bạn dũng cảm của cô đã đánh bại Quỷ vương và mang lại hòa bình cho vùng đất. Nhưng đó là chuyện của quá khứ...
-              </p>
-              <button className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-500 text-white px-6 py-2.5 rounded-xl font-medium transition-all shadow-lg hover:shadow-indigo-500/25">
-                <Play className="w-5 h-5 fill-current" />
-                Xem ngay
-              </button>
-           </GlassPanel>
+  if (loading) {
+     return (
+        <div className="space-y-8 animate-pulse">
+            <div className="h-[500px] w-full bg-white/5 rounded-3xl" />
+            <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+                <div className="lg:col-span-3 space-y-8">
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
+                        {[1,2,3,4,5,6].map(i => <div key={i} className="aspect-[3/4] bg-white/5 rounded-2xl" />)}
+                    </div>
+                </div>
+                <div className="lg:col-span-1 bg-white/5 h-[600px] rounded-2xl" />
+            </div>
         </div>
-      </section>
+     )
+  }
 
-      {/* Trending Section */}
-      <FeaturedSection />
+  if (error) {
+    // ... same error
+    return <GlassPanel className="p-6 text-center text-red-400">{error}</GlassPanel>
+  }
+
+  if (!data) return null
+
+  return (
+    <div className="space-y-12">
+      {/* Dynamic Spotlight Carousel */}
+      <Spotlight items={data.nominate} />
+
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+          {/* Main Content (Left) */}
+          <div className="lg:col-span-3 space-y-12">
+                
+                {/* Schedule */}
+                <ScheduleSection data={data.schedule} />
+
+                {/* Latest Updates & Lists */}
+                <FeaturedSection data={data} />
+          </div>
+
+          {/* Sidebar (Right) */}
+          <div className="lg:col-span-1 space-y-8">
+                <RankingSection data={data.ranking} />
+                
+                {/* Could add more sidebar widgets here like "Genres" */}
+          </div>
+      </div>
     </div>
   );
 }

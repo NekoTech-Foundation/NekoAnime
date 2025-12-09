@@ -1,38 +1,23 @@
 "use client"
 
-import { useHomeData } from "@/hooks/use-home-data"
 import { GlassPanel } from "@/components/ui/glass-panel"
 import { Play, Star } from "lucide-react"
 import Link from "next/link"
+import { AnimeItem } from "@/lib/api/parser"
 
-export function FeaturedSection() {
-  const { data, loading, error } = useHomeData()
+interface FeaturedSectionProps {
+    data: {
+        latestUpdate: AnimeItem[]
+        nominate: AnimeItem[]
+    }
+}
 
-  if (loading) {
-     return (
-        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
-            {[1,2,3,4,5].map(i => (
-                <div key={i} className="aspect-[3/4] rounded-2xl bg-white/5 animate-pulse" />
-            ))}
-        </div>
-     )
-  }
-
-  if (error) {
-      return (
-          <GlassPanel className="p-6 text-center text-red-400">
-              {error}
-          </GlassPanel>
-      )
-  }
-
+export function FeaturedSection({ data }: FeaturedSectionProps) {
   if (!data) return null
 
   // Render Latest Updates
   return (
     <div className="space-y-12">
-        {/* Carousel / Hero could go here if we want to use 'carousel' data */}
-
         <section>
             <h2 className="text-2xl font-bold mb-6 flex items-center gap-3 text-white/90">
             <span className="w-1 h-8 bg-indigo-500 rounded-full" />
@@ -43,8 +28,6 @@ export function FeaturedSection() {
                 {data.latestUpdate.map((anime, i) => (
                     <Link key={i} href={anime.path || "#"} className="group relative block">
                         <div className="aspect-[3/4] rounded-2xl overflow-hidden mb-3 relative">
-                            {/* Proxied Image or Direct if allowed */}
-                            {/* Note: anime.image might need a proxy if CORS protected, but often distinct images load fine */}
                             <img
                                 src={anime.image}
                                 alt={anime.name}

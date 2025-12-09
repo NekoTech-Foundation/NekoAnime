@@ -32,7 +32,6 @@ export function int(str: string | undefined) {
     return isNaN(num) ? 0 : num
 }
 
-
 export interface AnimeItem {
     path: string
     image: string
@@ -40,6 +39,18 @@ export interface AnimeItem {
     chap: string
     rate: number
     views: number
+    description?: string
+}
+
+export interface ScheduleItem {
+    day: string
+    date: string
+    month: string
+    items: AnimeItem[]
+}
+
+export interface RankingItem extends AnimeItem {
+    top: number
 }
 
 export function getInfoTPost(cheerio: Cheerio<Element>): AnimeItem {
@@ -62,13 +73,19 @@ export function getInfoTPost(cheerio: Cheerio<Element>): AnimeItem {
   const viewsText = cheerio.find(".Year").first().text()
   const views = int(viewsText.match(/[\d,]+/)?.[0])
 
+  // Description
+  const description = cheerio.find(".Description").first().text().trim() || 
+                      cheerio.find(".ToolTip").first().text().trim() ||
+                      cheerio.attr("data-content") || undefined
+
   return {
     path,
     image,
     name,
     chap,
     rate,
-    views
+    views,
+    description
   }
 }
 
