@@ -179,4 +179,3 @@ export function NPlayer({ episode, poster, seasonId, seasonName }: NPlayerProps)
         </div>
     )
 }
-```

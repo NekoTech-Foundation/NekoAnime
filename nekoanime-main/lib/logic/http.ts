@@ -1,22 +1,9 @@
 import { C_URL } from "../constants"
 
 // Constants similar to hls-loader
-interface NekoHelperResponse {
-    success: boolean;
-    status: number;
-    data?: string; // Base64 string
-    error?: string;
-    url?: string;
-    headers?: Record<string, string>;
-}
 
-declare global {
-    interface Window {
-       NekoHelper?: {
-           fetch: (url: string, options?: any) => Promise<NekoHelperResponse>;
-       }
-    }
-}
+
+
 
 class ExtensionError extends Error {
   constructor(message: string) {

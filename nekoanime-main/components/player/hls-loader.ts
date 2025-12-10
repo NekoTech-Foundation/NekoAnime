@@ -33,21 +33,9 @@ interface LoaderCallbacks {
     onProgress: (stats: LoaderStats, context: LoaderContext, data: ArrayBuffer | string, networkDetails: unknown) => void;
 }
 
-interface NekoHelperResponse {
-    success: boolean;
-    status: number;
-    data?: string; // Base64 string
-    error?: string;
-    url?: string;
-}
 
-declare global {
-    interface Window {
-       NekoHelper?: {
-           fetch: (url: string, options?: RequestInit) => Promise<NekoHelperResponse>;
-       }
-    }
-}
+
+
 
 export class HlsExtensionLoader {
     context: LoaderContext | null;

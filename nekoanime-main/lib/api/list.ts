@@ -78,7 +78,10 @@ export async function getList(
                 othername, // Might need better selector if available
                 path: `/phim/${slug}`,
                 process,
-                description: ""
+                description: "",
+                chap: process,
+                rate: 10,
+                views: 0
             })
         }
     })

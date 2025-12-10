@@ -20,10 +20,7 @@ export async function fetchJava(
         headerObj[key] = value
     })
 
-  const res = await httpGet({
-      url,
-      headers: headerObj
-  })
+  const res = await httpGet(url, headerObj)
 
   if (options?.signal?.aborted) throw new Error("ABORTED")
 

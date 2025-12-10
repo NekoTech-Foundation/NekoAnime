@@ -22,6 +22,13 @@ export const useHistoryStore = create<HistoryState>((set, get) => ({
   page: 1,
   error: null,
 
+  loadMore: async () => {
+      const { page, fetchPage, hasMore } = get()
+      if (hasMore) {
+          await fetchPage(page + 1)
+      }
+  },
+
   fetchPage: async (page: number) => {
     set({ loading: true, error: null })
     const uid = useAuthStore.getState().uid()

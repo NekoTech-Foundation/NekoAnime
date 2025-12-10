@@ -35,19 +35,17 @@ export async function getPlayerLink(config: {
 }): Promise<PlayerLinkReturn> {
   const { id, play, hash: link } = config
 
-  // Use httpPost from lib/logic/http
-  // The original fetch used body: URLSearchParams, but Http.post likely handles object as form data or json
-  // Original `Http.post` from extension usually takes an object.
-  // Let's inspect `http.ts` in original source if possible about how it encodes body?
-  // Original `src/logic/http.ts` line 57: `Http.post({ ..., data })`.
-  // It passed `data` directly.
-
   const response = await httpPost("/ajax/player?v=2019a", {
       id,
       play,
       link,
       backuplinks: "1"
+  }, {
+      "Content-Type": "application/x-www-form-urlencoded"
   })
+
+  // Debug raw response
+  console.log("[PlayerLink] Response Data:", response.data)
 
   let configData: PlayerLinkReturn;
   try {
