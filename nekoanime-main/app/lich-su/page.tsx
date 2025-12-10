@@ -9,7 +9,7 @@ export default function HistoryPage() {
             Lịch sử xem
           </h1>
           <p className="text-gray-400 mt-2">
-            Danh sách các anime bạn đã xem gần đây
+            Danh sách các anime bạn đã xem gần đây, Hiển thị 30 Bộ anime đã xem của bạn
           </p>
         </div>
 
