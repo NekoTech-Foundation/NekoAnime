@@ -7,7 +7,7 @@ import { useAuthStore } from "@/hooks/useAuthStore"
 import Link from "next/link"
 
 export function HistoryList() {
-  const { items, loading, hasMore, loadMore, refresh, error } = useHistoryStore()
+  const { items, loading, hasMore, fetchPage, page, refresh, error } = useHistoryStore()
   const isLogged = useAuthStore(s => s.isLogged())
 
   useEffect(() => {
@@ -67,19 +67,34 @@ export function HistoryList() {
           </div>
       )}
 
-      {hasMore && !loading && items.length > 0 && (
-        <div className="text-center pt-8">
-            <button 
-                onClick={loadMore}
-                className="px-6 py-2 rounded-full bg-white/5 hover:bg-white/10 text-white font-medium transition-colors"
-            >
-                Xem thêm
-            </button>
-        </div>
+      {/* Pagination Controls */}
+      {!loading && items.length > 0 && (
+          <div className="flex justify-center items-center gap-4 py-8">
+              <button 
+                  onClick={() => fetchPage(Math.max(1, page - 1))}
+                  disabled={page === 1}
+                  className="px-4 py-2 rounded-lg bg-white/5 hover:bg-white/10 disabled:opacity-50 disabled:cursor-not-allowed text-sm font-medium transition-colors"
+              >
+                  Trước
+              </button>
+              
+              <span className="text-sm font-medium text-white">
+                  Trang {page}
+              </span>
+
+              <button 
+                  onClick={() => fetchPage(page + 1)}
+                  disabled={!hasMore && items.length < 30} // Simple check
+                  className="px-4 py-2 rounded-lg bg-white/5 hover:bg-white/10 disabled:opacity-50 disabled:cursor-not-allowed text-sm font-medium transition-colors"
+              >
+                  Sau
+              </button>
+          </div>
       )}
 
+      {/* Empty State - Left aligned as requested */}
       {!loading && items.length === 0 && !error && (
-         <div className="text-center py-12 text-gray-500">
+         <div className="text-left py-12 text-gray-500">
              Chưa có lịch sử xem
          </div>
       )}

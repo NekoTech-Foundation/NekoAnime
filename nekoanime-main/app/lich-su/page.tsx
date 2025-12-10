@@ -3,7 +3,7 @@ import { HistoryList } from "@/components/history/history-list"
 export default function HistoryPage() {
   return (
     <div className="min-h-screen pt-20 px-4 md:px-8 pb-10 ml-[80px] md:ml-[250px] transition-all duration-300">
-      <div className="max-w-7xl mx-auto space-y-8">
+      <div className="space-y-8">
         <div>
           <h1 className="text-3xl font-bold bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">
             Lịch sử xem

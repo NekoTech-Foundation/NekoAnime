@@ -9,9 +9,10 @@ interface HistoryState {
   page: number
   error: string | null
 
-  loadMore: () => Promise<void>
+  loadMore: () => Promise<void> // keeping for backup or remove? Better remove or alias
+  fetchPage: (page: number) => Promise<void>
   refresh: () => Promise<void>
-  sync: () => Promise<void>
+  sync: (page?: number) => Promise<void>
 }
 
 export const useHistoryStore = create<HistoryState>((set, get) => ({
@@ -21,13 +22,8 @@ export const useHistoryStore = create<HistoryState>((set, get) => ({
   page: 1,
   error: null,
 
-  loadMore: async () => {
-    const { loading, hasMore, page, items } = get()
-    if (loading || !hasMore) return
-
+  fetchPage: async (page: number) => {
     set({ loading: true, error: null })
-    
-    // Get UID from auth store (non-reactive read usually fine in action)
     const uid = useAuthStore.getState().uid()
     if (!uid) {
         set({ loading: false, error: "Not logged in" })
@@ -35,19 +31,17 @@ export const useHistoryStore = create<HistoryState>((set, get) => ({
     }
 
     try {
-        // Sync on first load if empty? Or just fetch.
-        // Let's rely on manual sync or background sync.
-        // But user issue is missing history.
-        // Let's Try to sync if page 1 and empty items?
-        // Or just query.
+        let newItems = await queryHistory(uid, page)
         
-        const newItems = await queryHistory(uid, page)
-        
+        // Lazy Sync: If no items found in DB, try fetching from legacy site for this page
         if (newItems.length === 0) {
-            set({ hasMore: false })
-        } else {
-            set({ items: [...items, ...newItems], page: page + 1 })
+            console.log(`Page ${page} empty in DB, attempting legacy sync...`)
+            await get().sync(page)
+            // Retry query after sync
+            newItems = await queryHistory(uid, page)
         }
+
+        set({ items: newItems, page: page, hasMore: newItems.length === 30 })
     } catch (err) {
         console.error(err)
         set({ error: "Failed to load history" })
@@ -57,20 +51,21 @@ export const useHistoryStore = create<HistoryState>((set, get) => ({
   },
 
   refresh: async () => {
-    set({ items: [], page: 1, hasMore: true })
-    // Trigger sync on refresh
+    // Trigger sync for page 1 on refresh
     try {
-       await get().sync()
+       await get().sync(1)
     } catch(e) { console.error("Sync failed", e)}
-    await get().loadMore()
+    
+    // Then load page 1
+    await get().fetchPage(1)
   },
 
-  sync: async () => {
+  sync: async (page: number = 1) => {
       const uid = useAuthStore.getState().uid()
       if (!uid) return
       
       try {
-          const legacyItems = await fetchLegacyHistory()
+          const legacyItems = await fetchLegacyHistory(page)
           if (legacyItems.length > 0) {
               await syncLegacyToSupabase(uid, legacyItems)
           }
