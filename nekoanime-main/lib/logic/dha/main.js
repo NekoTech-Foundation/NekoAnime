@@ -1840,7 +1840,7 @@ async function Da() {
   ));
 }
 async function Ga(A, e = !0, t = !1, i = !1, a = !1, B = null) {
-  const E = vA.b62u(da(location.hostname, 10), 10, B), f = await crypto.subtle.digest(
+  const E = vA.b62u(da("localhost", 10), 10, B), f = await crypto.subtle.digest(
     // /* line 598 */,
     nt.decode(E[0]),
     E[1]
