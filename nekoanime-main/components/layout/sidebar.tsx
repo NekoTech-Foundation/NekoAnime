@@ -4,9 +4,11 @@
 import { cn } from "@/lib/utils"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { Home, Search, Calendar, Trophy, Settings, Menu } from "lucide-react"
+import { Home, Search, Calendar, Trophy, Settings, Menu, History, Heart } from "lucide-react"
 import { useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
+import { UserProfile } from "@/components/user/user-profile"
+import { LoginDialog } from "@/components/auth/login-dialog"
 
 const NAV_ITEMS = [
   { label: "Trang chủ", href: "/", icon: Home },
@@ -14,11 +16,14 @@ const NAV_ITEMS = [
   { label: "Danh sách", href: "/danh-sach", icon: Menu },
   { label: "Lịch chiếu", href: "/lich-chieu", icon: Calendar },
   { label: "Bảng xếp hạng", href: "/bang-xep-hang", icon: Trophy },
+  { label: "Đang theo dõi", href: "/theo-doi", icon: Heart },
+  { label: "Lịch sử", href: "/lich-su", icon: History },
 ]
 
 export function Sidebar() {
   const pathname = usePathname()
   const [isCollapsed, setIsCollapsed] = useState(false)
+  const [showLogin, setShowLogin] = useState(false)
 
   return (
     <motion.div
@@ -79,18 +84,10 @@ export function Sidebar() {
       </div>
 
       <div className="p-4 border-t border-white/5">
-        <div className="flex items-center gap-3">
-           <div className="w-10 h-10 rounded-full bg-indigo-500/20 flex items-center justify-center">
-             <Settings className="w-5 h-5 text-indigo-300" />
-           </div>
-           {!isCollapsed && (
-             <div className="overflow-hidden">
-               <p className="text-sm font-medium">Cài đặt</p>
-               <p className="text-xs text-gray-500">Tùy chỉnh</p>
-             </div>
-           )}
-        </div>
+        <UserProfile isCollapsed={isCollapsed} onOpenLogin={() => setShowLogin(true)} />
       </div>
+
+      <LoginDialog isOpen={showLogin} onClose={() => setShowLogin(false)} />
     </motion.div>
   )
 }

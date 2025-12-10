@@ -3,13 +3,15 @@
 
 import { useAnimeData } from "@/hooks/use-anime-data"
 import { GlassPanel } from "@/components/ui/glass-panel"
-import { Play, Star, Eye, Clock, ArrowLeft, Loader2 } from "lucide-react"
+import { Play, Star, Eye, Clock, ArrowLeft, Loader2, Heart } from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
 import { NPlayer } from "@/components/player/n-player"
 import { cn } from "@/lib/utils"
 import type { Episode } from "@/lib/api/parser/episode"
 import type { AnimeItem } from "@/lib/api/parser/helpers"
+import { useFollowStore } from "@/hooks/useFollowStore"
+import { useState, useEffect } from "react"
 
 interface AnimeDetailViewProps {
     slugParts: string[]
@@ -21,6 +23,17 @@ export default function AnimeDetailView({ slugParts }: AnimeDetailViewProps) {
     const currentChap = isWatch ? slugParts[1] : null
 
     const { detail, episodes, loading, error } = useAnimeData(seasonSlug)
+    const { toggle, checkStatus, statusCache } = useFollowStore()
+    const [followLoading, setFollowLoading] = useState(false)
+    
+    // Derived state
+    const isFollowed = detail?.id ? (statusCache[detail.id] || false) : false
+
+    useEffect(() => {
+        if (detail?.id) {
+            checkStatus(detail.id)
+        }
+    }, [detail?.id]) // eslint-disable-line
 
     if (loading) {
         return (
@@ -50,6 +63,13 @@ export default function AnimeDetailView({ slugParts }: AnimeDetailViewProps) {
         ? episodes.find((e: Episode) => e.id === currentChap || e.id.endsWith(currentChap || "")) || episodes[0]
         : null
 
+    const handleFollow = async () => {
+        if (!detail?.id) return
+        setFollowLoading(true)
+        await toggle(detail.id, isFollowed)
+        setFollowLoading(false)
+    }
+
     return (
         <div className="space-y-8 animate-in fade-in duration-500 pt-6">
              {/* Player Section OR Banner */}
@@ -62,13 +82,28 @@ export default function AnimeDetailView({ slugParts }: AnimeDetailViewProps) {
                              <Link href={`/phim/${seasonSlug}`} className="p-2 rounded-full bg-white/5 hover:bg-white/10 transition-colors">
                                  <ArrowLeft className="w-5 h-5 text-white" />
                              </Link>
-                             <div className="min-w-0">
+                             <div className="min-w-0 flex-1">
                                  <h1 className="text-lg font-bold text-white truncate">{detail.name}</h1>
                                  <p className="text-gray-400 text-xs truncate">Đang phát: <span className="text-indigo-400 font-medium">{currentEpisode.name}</span></p>
                              </div>
+                             <button 
+                                onClick={handleFollow}
+                                disabled={followLoading}
+                                className={cn(
+                                    "p-2 rounded-full transition-colors",
+                                    isFollowed ? "bg-red-500/20 text-red-500 hover:bg-red-500/30" : "bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white"
+                                )}
+                             >
+                                <Heart className={cn("w-5 h-5", isFollowed && "fill-current")} />
+                             </button>
                          </div>
 
-                         <NPlayer episode={currentEpisode} poster={detail.poster || detail.image} />
+                         <NPlayer 
+                            episode={currentEpisode} 
+                            poster={detail.poster || detail.image} 
+                            seasonId={seasonSlug}
+                            seasonName={detail.name}
+                         />
                          
                          {/* Mobile Info (visible below player) */}
                          <GlassPanel className="p-4 lg:hidden">
@@ -172,6 +207,19 @@ export default function AnimeDetailView({ slugParts }: AnimeDetailViewProps) {
                                         Xem Ngay
                                     </Link>
                                 )}
+                                <button 
+                                    onClick={handleFollow}
+                                    disabled={followLoading}
+                                    className={cn(
+                                        "flex items-center gap-2 px-6 py-3 rounded-xl font-medium transition-all border",
+                                        isFollowed 
+                                            ? "bg-red-500/20 text-red-500 border-red-500/50 hover:bg-red-500/30" 
+                                            : "bg-white/10 text-white border-white/10 hover:bg-white/20"
+                                    )}
+                                >
+                                    <Heart className={cn("w-5 h-5", isFollowed && "fill-current")} />
+                                    {isFollowed ? "Đã Theo Dõi" : "Theo Dõi"}
+                                </button>
                             </div>
                         </div>
                     </div>

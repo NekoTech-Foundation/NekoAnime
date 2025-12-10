@@ -34,10 +34,30 @@ export interface AnimeDetail {
     seasonOf: {name: string, href: string} | null
     related: AnimeItem[]
     watchUrl: string | null
+    id: string
 }
 
 export function parseAnimeDetail(html: string) {
   const $ = parserDom(html)
+
+  // Extract ID
+  // Common WordPress / AnimeVietsub patterns
+  let id = ""
+  const postIdAttr = $("article[id^='post-']").attr("id")
+  if (postIdAttr) {
+      id = postIdAttr.replace("post-", "")
+  }
+  
+  // Fallback: Check for hidden input with name='id' or 'movie_id'
+  if (!id) {
+       id = $("input[name='movie_id']").val() as string || $("input[name='id']").val() as string || ""
+  }
+  
+  // Fallback: data-id on some elements
+  if (!id) {
+      id = $(".TPost").attr("data-id") || ""
+  }
+
 
   const name = $(".Title").eq(0).text()
   const othername = $(".SubTitle").eq(0).text()
@@ -114,6 +134,7 @@ export function parseAnimeDetail(html: string) {
     .toArray()
 
   return {
+    id,
     name,
     othername,
     image,

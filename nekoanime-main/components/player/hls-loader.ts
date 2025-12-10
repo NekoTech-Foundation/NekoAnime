@@ -57,7 +57,7 @@ export class HlsExtensionLoader {
     retryTimeout: ReturnType<typeof setTimeout> | null; // Timer ID
     retryDelay: number;
 
-    constructor(config: LoaderConfig) {
+    constructor(config: any) {
         console.log("%c[HlsExtensionLoader] CONSTRUCTOR CALLED", "background: purple; color: white; font-size: 14px;");
         this.context = null;
         this.config = config;

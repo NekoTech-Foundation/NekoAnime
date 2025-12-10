@@ -1,27 +1,67 @@
-
-"use client"
-
-import { useEffect, useState } from "react"
+```typescript
+import { useEffect, useState, useRef } from "react"
 import { getPlayerLink } from "@/lib/logic/player-link"
-import { HlsExtensionLoader } from "./hls-loader"
 import ReactPlayer from "react-player"
 import HlsPlayer from "./hls-player"
-import { Loader2, AlertCircle } from "lucide-react"
+
+import { setProgress } from "@/lib/api/history"
+import { useAuthStore } from "@/hooks/useAuthStore"
 
 interface NPlayerProps {
-    episode: { id: string, play: string, hash: string }
+    episode: { id: string, play: string, hash: string, name: string }
     poster?: string
+    seasonId?: string
+    seasonName?: string
 }
 
 // Cast to any to avoid "url does not exist" type error that toggles between existing and not existing
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const ReactPlayerAny = ReactPlayer as any;
 
-export function NPlayer({ episode, poster }: NPlayerProps) {
+export function NPlayer({ episode, poster, seasonId, seasonName }: NPlayerProps) {
     const [sources, setSources] = useState<{ file: string, type: string, label: string }[]>([])
     const [currentSourceIdx, setCurrentSourceIdx] = useState(0)
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState<string | null>(null)
+    
+    // History tracking
+    const updateTimeout = useRef<NodeJS.Timeout | null>(null)
+    const { isLogged, uid } = useAuthStore()
+    
+    const handleProgress = (state: { playedSeconds: number, played: number, loaded: number, loadedSeconds: number }) => {
+        if (!isLogged() || !seasonId || !seasonName) return
+
+        // Debounce update every 10 seconds
+        if (!updateTimeout.current) {
+             updateTimeout.current = setTimeout(async () => {
+                const userUid = uid()
+                if (!userUid) return
+
+                try {
+                     await setProgress(userUid, seasonId, episode.id, {
+                        name: episode.name,
+                        poster: poster || "",
+                        season_name: seasonName
+                     }, {
+                        cur: state.playedSeconds,
+                        dur: state.playedSeconds / (state.played || 0.01), // Estimate duration or use if available. state.played = cur / dur => dur = cur / played
+                        name: episode.name
+                     })
+                } catch (e) {
+                    console.error("Failed to save progress", e)
+                } finally {
+                    updateTimeout.current = null
+                }
+             }, 10000)
+        }
+    }
+    
+    // Clear timeout on unmount or episode change
+    useEffect(() => {
+        return () => {
+            if (updateTimeout.current) clearTimeout(updateTimeout.current)
+        }
+    }, [episode])
 
     useEffect(() => {
         if (!episode) return
@@ -66,7 +106,7 @@ export function NPlayer({ episode, poster }: NPlayerProps) {
         loadStream()
     }, [episode])
 
-    const handlePlayerError = (e: any) => {
+    const handlePlayerError = (e: unknown) => {
         console.error("[Player] Source failed:", sources[currentSourceIdx], e)
 
         if (currentSourceIdx < sources.length - 1) {
@@ -76,51 +116,28 @@ export function NPlayer({ episode, poster }: NPlayerProps) {
             setError("Không thể phát video này (Đã thử tất cả server)")
         }
     }
+    
+    // Render logic
+    const activeSource = sources[currentSourceIdx]
+    const isHls = activeSource?.type === 'hls' || (activeSource?.file && (activeSource.file.includes('.m3u8') || activeSource.file.startsWith('data:application/vnd.apple.mpegurl') || activeSource.file.startsWith('blob:')))
 
     if (!episode) return null
 
-    const activeSource = sources[currentSourceIdx]
-    // Check if source requires HLS forcing (Data URI or m3u8 extension)
-    const isHls = activeSource?.type === 'hls' || (activeSource?.file && (activeSource.file.includes('.m3u8') || activeSource.file.startsWith('data:application/vnd.apple.mpegurl') || activeSource.file.startsWith('blob:')))
-
-    // Check for extension availability
-    const [extReady, setExtReady] = useState(false)
-
-    useEffect(() => {
-        // Check immediately
-        // @ts-ignore
-        if (typeof window !== 'undefined' && window.NekoHelper) {
-            setExtReady(true)
-        }
-
-        // Also listen for potential lazy injection (optional)
-        const checkInterval = setInterval(() => {
-            // @ts-ignore
-            if (typeof window !== 'undefined' && window.NekoHelper) {
-                setExtReady(true)
-                clearInterval(checkInterval)
-            }
-        }, 1000)
-
-        return () => clearInterval(checkInterval)
-    }, [])
-
-    useEffect(() => {
-        // @ts-ignore
-        if (extReady && window.NekoHelper) {
-            console.log("[NPlayer] Testing Extension Connection...")
-            // @ts-ignore
-            window.NekoHelper.fetch('https://httpbin.org/get').then((res) => {
-                console.log("[NPlayer] Extension Test Success:", res.status)
-            }).catch((err: any) => {
-                console.error("[NPlayer] Extension Test Failed:", err)
-            })
-        }
-    }, [extReady])
-
     return (
         <div className="relative aspect-video bg-black rounded-2xl overflow-hidden shadow-2xl ring-1 ring-white/10 group">
-            {/* ... loadings ... */}
+            {/* Loading Overlay */}
+            {loading && (
+                 <div className="absolute inset-0 flex items-center justify-center z-10 bg-black/50 text-white">
+                     Loading...
+                 </div>
+            )}
+            
+            {/* Error Overlay */}
+            {error && (
+                <div className="absolute inset-0 flex flex-col items-center justify-center z-10 bg-black/80 text-red-500 p-4 text-center">
+                    <p>{error}</p>
+                </div>
+            )}
 
             {activeSource && !loading && !error && (
                 <div className="w-full h-full">
@@ -130,6 +147,7 @@ export function NPlayer({ episode, poster }: NPlayerProps) {
                             src={activeSource.file}
                             poster={poster}
                             onError={handlePlayerError}
+                            onProgress={handleProgress}
                             autoPlay={false}
                         />
                     ) : (
@@ -142,7 +160,8 @@ export function NPlayer({ episode, poster }: NPlayerProps) {
                             onReady={() => console.log("[Player] onReady")}
                             onStart={() => console.log("[Player] onStart")}
                             onBuffer={() => console.log("[Player] onBuffer")}
-                            onError={(e: any) => {
+                            onProgress={handleProgress}
+                            onError={(e: unknown) => {
                                 console.error("[Player] onError", e)
                                 handlePlayerError(e)
                             }}
@@ -153,13 +172,12 @@ export function NPlayer({ episode, poster }: NPlayerProps) {
                                         poster: poster
                                     }
                                 }
-                            } as any}
+                            }}
                         />
                     )}
                 </div>
             )}
-
-            {/* Source Indicator (Optional Debug) */}
         </div>
     )
 }
+```

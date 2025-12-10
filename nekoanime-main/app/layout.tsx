@@ -5,6 +5,7 @@ import "./globals.css";
 import { Sidebar } from "@/components/layout/sidebar";
 import { ExtensionCheck } from "@/components/layout/extension-check";
 import { Footer } from "@/components/layout/footer";
+import { NotificationManager } from "@/components/notification/notification-manager";
 
 export const metadata: Metadata = {
   title: "NekoAnime - Xem Anime Online",
@@ -21,6 +22,7 @@ export default function RootLayout({
       <body
         className={`${inter.variable} ${caveat.variable} font-sans antialiased min-h-screen flex selection:bg-indigo-500/30 selection:text-indigo-200`}
       >
+        <NotificationManager />
         <Sidebar />
         <main className="flex-1 ml-[calc(80px)] lg:ml-[250px] transition-all duration-300 p-6 lg:p-10 relative z-10">
             <ExtensionCheck>

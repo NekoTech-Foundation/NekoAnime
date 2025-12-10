@@ -3,23 +3,23 @@
 import { useEffect, useRef, useState } from "react"
 import Hls from "hls.js"
 import { HlsExtensionLoader } from "./hls-loader"
-import { Loader2, Play, Pause, Volume2, VolumeX, Maximize, Settings } from "lucide-react"
+import { Loader2 } from "lucide-react"
 
 interface HlsPlayerProps {
     src: string
     poster?: string
-    onError?: (error: any) => void
+    onError?: (error: unknown) => void
     autoPlay?: boolean
+    onProgress?: (state: { playedSeconds: number, played: number, loaded: number, loadedSeconds: number }) => void
 }
 
-export default function HlsPlayer({ src, poster, onError, autoPlay = false }: HlsPlayerProps) {
+export default function HlsPlayer({ src, poster, onError, autoPlay = false, onProgress }: HlsPlayerProps) {
     const videoRef = useRef<HTMLVideoElement>(null)
     const [isLoading, setIsLoading] = useState(true)
-    const [isPlaying, setIsPlaying] = useState(false)
-    const [hlsInstance, setHlsInstance] = useState<Hls | null>(null)
 
     useEffect(() => {
         let hls: Hls | null = null;
+        let mounted = true;
 
         if (videoRef.current) {
             if (Hls.isSupported()) {
@@ -28,7 +28,7 @@ export default function HlsPlayer({ src, poster, onError, autoPlay = false }: Hl
                     debug: true,
                     fLoader: HlsExtensionLoader,
                     pLoader: HlsExtensionLoader,
-                    xhrSetup: (xhr, url) => {
+                    xhrSetup: (xhr) => {
                         xhr.withCredentials = false;
                     }
                 });
@@ -37,6 +37,7 @@ export default function HlsPlayer({ src, poster, onError, autoPlay = false }: Hl
                 hls.attachMedia(videoRef.current);
 
                 hls.on(Hls.Events.MANIFEST_PARSED, () => {
+                    if (!mounted) return;
                     console.log("[HlsPlayer] Manifest Parsed");
                     setIsLoading(false);
                     if (autoPlay) {
@@ -65,13 +66,12 @@ export default function HlsPlayer({ src, poster, onError, autoPlay = false }: Hl
                     }
                 });
 
-                setHlsInstance(hls);
-
             } else if (videoRef.current.canPlayType('application/vnd.apple.mpegurl')) {
                 // Native HLS support (Safari)
                 console.log("[HlsPlayer] Native HLS support detected");
                 videoRef.current.src = src;
                 videoRef.current.addEventListener('loadedmetadata', () => {
+                    if (!mounted) return;
                     setIsLoading(false);
                     if (autoPlay) videoRef.current?.play();
                 });
@@ -86,6 +86,7 @@ export default function HlsPlayer({ src, poster, onError, autoPlay = false }: Hl
         }
 
         return () => {
+            mounted = false;
             if (hls) {
                 hls.destroy();
             }
@@ -108,6 +109,24 @@ export default function HlsPlayer({ src, poster, onError, autoPlay = false }: Hl
                 controls
                 playsInline
                 crossOrigin="anonymous"
+                onTimeUpdate={() => {
+                    if (videoRef.current && onProgress) {
+                        const duration = videoRef.current.duration || 0
+                        const currentTime = videoRef.current.currentTime
+                        const buffered = videoRef.current.buffered
+                        let loaded = 0
+                        if (buffered.length > 0) {
+                             loaded = buffered.end(buffered.length - 1)
+                        }
+                        
+                        onProgress({
+                            playedSeconds: currentTime,
+                            played: duration > 0 ? currentTime / duration : 0,
+                            loadedSeconds: loaded,
+                            loaded: duration > 0 ? loaded / duration : 0
+                        })
+                    }
+                }}
             />
         </div>
     )

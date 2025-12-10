@@ -41,6 +41,8 @@ export interface AnimeItem {
     rate: number
     views: number
     description?: string
+    process?: string // e.g. "Tập 12" or "Full"
+    othername?: string
 }
 
 export interface ScheduleItem {

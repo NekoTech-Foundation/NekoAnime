@@ -10,21 +10,24 @@ export function ExtensionCheck({ children }: { children: React.ReactNode }) {
   const [hasExtension, setHasExtension] = useState(true)
 
   useEffect(() => {
-    const checkExtension = async () => {
-        try {
-            // Dynamically import to avoid SSR issues with browser-only libraries
-            const module = await import("client-ext-animevsub-helper")
-            const Http = module.Http
+    let attempts = 0
+    const maxAttempts = 20 // 2 seconds (100ms * 20)
 
-            if (Http && Http.version) {
-                 setHasExtension(true)
-            } else {
-                 setHasExtension(false)
-            }
-        } catch {
-            setHasExtension(false)
+    const checkExtension = () => {
+        // cast to any to avoid "Property 'NekoHelper' does not exist on type 'Window'" if global type isn't loaded
+        if ((window as any).NekoHelper) {
+            setHasExtension(true)
+            setIsReady(true)
+            return
         }
-        setIsReady(true)
+
+        attempts++
+        if (attempts >= maxAttempts) {
+            setHasExtension(false)
+            setIsReady(true)
+        } else {
+            setTimeout(checkExtension, 100)
+        }
     }
 
     checkExtension()
