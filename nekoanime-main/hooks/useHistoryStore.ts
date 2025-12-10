@@ -25,6 +25,8 @@ export const useHistoryStore = create<HistoryState>((set, get) => ({
   fetchPage: async (page: number) => {
     set({ loading: true, error: null })
     const uid = useAuthStore.getState().uid()
+    console.log("[HistoryStore] fetchPage called for:", { uid, page })
+    
     if (!uid) {
         set({ loading: false, error: "Not logged in" })
         return
@@ -32,6 +34,7 @@ export const useHistoryStore = create<HistoryState>((set, get) => ({
 
     try {
         let newItems = await queryHistory(uid, page)
+        console.log("[HistoryStore] Initial query result:", newItems.length)
         
         // Lazy Sync: If no items found in DB, try fetching from legacy site for this page
         if (newItems.length === 0) {
@@ -39,11 +42,12 @@ export const useHistoryStore = create<HistoryState>((set, get) => ({
             await get().sync(page)
             // Retry query after sync
             newItems = await queryHistory(uid, page)
+            console.log("[HistoryStore] Post-sync query result:", newItems.length)
         }
 
         set({ items: newItems, page: page, hasMore: newItems.length === 30 })
     } catch (err) {
-        console.error(err)
+        console.error("[HistoryStore] fetchPage error:", err)
         set({ error: "Failed to load history" })
     } finally {
         set({ loading: false })

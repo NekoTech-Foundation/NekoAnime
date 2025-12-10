@@ -27,7 +27,7 @@ export function HistoryList() {
 
   return (
     <div className="space-y-6">
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 3xl:grid-cols-7 gap-4">
         {items.map((item) => (
           <Link 
             href={`/xem-phim/${item.season}/${item.episode}`} 
@@ -41,7 +41,7 @@ export function HistoryList() {
                 loading="lazy"
              />
              <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/90 via-black/60 to-transparent p-4">
-                <h3 className="text-white font-medium line-clamp-1 group-hover:text-indigo-300 transition-colors">
+                <h3 className="text-white font-medium line-clamp-2 group-hover:text-indigo-300 transition-colors">
                     {item.name}
                 </h3>
                 <div className="flex items-center gap-2 mt-1 text-xs text-gray-400">

@@ -77,8 +77,12 @@ export async function fetchLegacyHistory(page: number = 1) {
     const url = page === 1 ? "/lich-su" : `/lich-su/trang-${page}.html` // Guessing pagination pattern or /lich-su?page=2
     
     try {
+        console.log("[HistoryAPI] Fetching legacy:", url)
         const { data: html } = await get(url)
-        return parseLegacyHistory(html)
+        console.log("[HistoryAPI] HTML length:", html?.length)
+        const parsed = parseLegacyHistory(html)
+        console.log("[HistoryAPI] Parsed items:", parsed.length)
+        return parsed
     } catch (e) {
         console.error("Failed to fetch legacy history", e)
         return []
