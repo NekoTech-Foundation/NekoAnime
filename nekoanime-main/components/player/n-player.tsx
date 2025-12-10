@@ -1,4 +1,3 @@
-```typescript
 import { useEffect, useState, useRef } from "react"
 import { getPlayerLink } from "@/lib/logic/player-link"
 import ReactPlayer from "react-player"

@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import { queryHistory, HistoryItem } from '@/lib/api/history'
+import { queryHistory, HistoryItem, fetchLegacyHistory, syncLegacyToSupabase } from '@/lib/api/history'
 import { useAuthStore } from './useAuthStore'
 
 interface HistoryState {
@@ -11,6 +11,7 @@ interface HistoryState {
 
   loadMore: () => Promise<void>
   refresh: () => Promise<void>
+  sync: () => Promise<void>
 }
 
 export const useHistoryStore = create<HistoryState>((set, get) => ({
@@ -34,6 +35,12 @@ export const useHistoryStore = create<HistoryState>((set, get) => ({
     }
 
     try {
+        // Sync on first load if empty? Or just fetch.
+        // Let's rely on manual sync or background sync.
+        // But user issue is missing history.
+        // Let's Try to sync if page 1 and empty items?
+        // Or just query.
+        
         const newItems = await queryHistory(uid, page)
         
         if (newItems.length === 0) {
@@ -51,6 +58,24 @@ export const useHistoryStore = create<HistoryState>((set, get) => ({
 
   refresh: async () => {
     set({ items: [], page: 1, hasMore: true })
+    // Trigger sync on refresh
+    try {
+       await get().sync()
+    } catch(e) { console.error("Sync failed", e)}
     await get().loadMore()
+  },
+
+  sync: async () => {
+      const uid = useAuthStore.getState().uid()
+      if (!uid) return
+      
+      try {
+          const legacyItems = await fetchLegacyHistory()
+          if (legacyItems.length > 0) {
+              await syncLegacyToSupabase(uid, legacyItems)
+          }
+      } catch (e) {
+          console.error("Sync error", e)
+      }
   }
 }))

@@ -26,8 +26,8 @@ export default function HlsPlayer({ src, poster, onError, autoPlay = false, onPr
                 console.log("[HlsPlayer] Hls is supported. Initializing...")
                 hls = new Hls({
                     debug: true,
-                    fLoader: HlsExtensionLoader,
-                    pLoader: HlsExtensionLoader,
+                    fLoader: HlsExtensionLoader as any,
+                    pLoader: HlsExtensionLoader as any,
                     xhrSetup: (xhr) => {
                         xhr.withCredentials = false;
                     }

@@ -48,7 +48,72 @@ export default function FollowedPage() {
                 </div>
             )}
             
-            {/* Infinite scroll trigger could be added here, or simple load more button */}
+            {/* Pagination */}
+            {!loading && (items.length > 0) && (
+                <div className="flex justify-center items-center space-x-2 py-8 overflow-x-auto">
+                    <button
+                        onClick={() => fetchList(items.length > 0 && 1 < useFollowStore.getState().curPage ? useFollowStore.getState().curPage - 1 : 1)}
+                        disabled={useFollowStore.getState().curPage === 1}
+                        className="px-4 py-2 rounded-lg bg-white/5 hover:bg-white/10 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm font-medium"
+                    >
+                        Trước
+                    </button>
+                    
+                    <div className="flex items-center space-x-1">
+                        {(() => {
+                            const { curPage, maxPage } = useFollowStore.getState()
+                            let pages = []
+                            // Logic to show limited pages
+                            const maxVisible = 5
+                            let start = Math.max(1, curPage - 2)
+                            let end = Math.min(maxPage, start + maxVisible - 1)
+                            
+                            if (end - start + 1 < maxVisible) {
+                                start = Math.max(1, end - maxVisible + 1)
+                            }
+
+                            if (start > 1) {
+                                pages.push(
+                                    <button key="1" onClick={() => fetchList(1)} className={`w-10 h-10 rounded-lg flex items-center justify-center transition-colors text-sm font-medium ${curPage === 1 ? 'bg-indigo-500 text-white shadow-lg shadow-indigo-500/25' : 'bg-white/5 hover:bg-white/10 text-gray-400'}`}>1</button>
+                                )
+                                if (start > 2) pages.push(<span key="dots1" className="text-gray-600 px-1">...</span>)
+                            }
+
+                            for (let i = start; i <= end; i++) {
+                                pages.push(
+                                    <button
+                                        key={i}
+                                        onClick={() => fetchList(i)}
+                                        className={`w-10 h-10 rounded-lg flex items-center justify-center transition-colors text-sm font-medium ${
+                                            curPage === i 
+                                                ? 'bg-indigo-500 text-white shadow-lg shadow-indigo-500/25' 
+                                                : 'bg-white/5 hover:bg-white/10 text-gray-400'
+                                        }`}
+                                    >
+                                        {i}
+                                    </button>
+                                )
+                            }
+
+                            if (end < maxPage) {
+                                if (end < maxPage - 1) pages.push(<span key="dots2" className="text-gray-600 px-1">...</span>)
+                                pages.push(
+                                    <button key={maxPage} onClick={() => fetchList(maxPage)} className={`w-10 h-10 rounded-lg flex items-center justify-center transition-colors text-sm font-medium ${curPage === maxPage ? 'bg-indigo-500 text-white shadow-lg shadow-indigo-500/25' : 'bg-white/5 hover:bg-white/10 text-gray-400'}`}>{maxPage}</button>
+                                )
+                            }
+                            return pages
+                        })()}
+                    </div>
+
+                    <button
+                        onClick={() => fetchList(useFollowStore.getState().curPage + 1)}
+                        disabled={useFollowStore.getState().curPage >= useFollowStore.getState().maxPage}
+                        className="px-4 py-2 rounded-lg bg-white/5 hover:bg-white/10 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm font-medium"
+                    >
+                        Sau
+                    </button>
+                </div>
+            )}
              <div className="h-4" />
         </div>
     )

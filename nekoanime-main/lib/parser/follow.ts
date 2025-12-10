@@ -33,12 +33,25 @@ export function parseFollowedList(html: string): FollowedList {
         
         // Find last page number
         const lastLink = pagination.find(".larger").last().text() || pagination.find(".page").last().text()
-        const pagesText = pagination.find(".pages").text() // "Page 1 of 10"
-        
+        const pagesText = pagination.find(".pages").text() // "Trang 1 của 6" or "Page 1 of 10"
+
         if (pagesText.includes("of")) {
              maxPage = parseInt(pagesText.split("of")[1].trim()) || 1
-        } else if (lastLink) {
+        } else if (pagesText.includes("của")) {
+             // Handle Vietnamese "Trang X của Y"
+             maxPage = parseInt(pagesText.split("của")[1].trim()) || 1
+        } else if (lastLink && !isNaN(parseInt(lastLink))) {
              maxPage = parseInt(lastLink) || 1
+        } else {
+            // Fallback: try to find the max number in all page links
+            const pageNumbers = pagination.find("a.page")
+                .map((_, el) => parseInt($(el).text()))
+                .toArray()
+                .filter(n => !isNaN(n));
+            
+            if (pageNumbers.length > 0) {
+                maxPage = Math.max(...pageNumbers);
+            }
         }
         
         if (maxPage < curPage) maxPage = curPage

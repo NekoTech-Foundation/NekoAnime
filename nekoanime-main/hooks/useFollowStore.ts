@@ -36,7 +36,7 @@ export const useFollowStore = create<FollowState>((set, get) => ({
         try {
             const data = await getFollowedList(page, tokenName, tokenValue)
             set({ 
-                items: page === 1 ? data.items : [...get().items, ...data.items],
+                items: data.items,
                 curPage: data.curPage,
                 maxPage: data.maxPage,
                 loading: false 
