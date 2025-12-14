@@ -39,7 +39,7 @@ export function FeaturedSection({ data }: FeaturedSectionProps) {
 
                             {(anime.chap && anime.chap !== "0" && anime.chap !== "?" && anime.chap !== "???") ? (
                                 <div className="absolute top-2 right-2 bg-black/60 backdrop-blur-md px-2 py-1 rounded-lg text-xs font-medium text-white border border-white/10">
-                                    {anime.chap}
+                                    {anime.chap.startsWith("Tập") ? anime.chap : `Tập ${anime.chap}`}
                                 </div>
                             ) : null}
 

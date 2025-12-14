@@ -97,7 +97,7 @@ export function Spotlight({ items }: SpotlightProps) {
               </span>
               {(item.chap && item.chap !== "0" && item.chap !== "?" && item.chap !== "???") ? (
                   <span className="text-gray-300 text-[10px] font-medium bg-black/40 px-2 py-0.5 rounded border border-white/5 uppercase tracking-wide">
-                    {item.chap}
+                    {item.chap.startsWith("Tập") ? item.chap : `Tập ${item.chap}`}
                   </span>
               ) : null}
             </div>

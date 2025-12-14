@@ -43,7 +43,10 @@ export function AnimeCard({ item, className }: AnimeCardProps) {
                     </p>
                     {(item.chap && item.chap !== "0" && item.chap !== "?" && item.chap !== "???") || (item.process && item.process !== "0" && item.process !== "?" && item.process !== "???") ? (
                         <span className="text-[10px] bg-indigo-600 px-1.5 py-0.5 rounded text-white/90">
-                            {item.chap || item.process}
+                            {(() => {
+                                const text = item.chap || item.process;
+                                return text?.startsWith("Tập") ? text : `Tập ${text}`
+                            })()}
                         </span>
                     ) : null}
                 </div>
