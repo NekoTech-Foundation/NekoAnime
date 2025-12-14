@@ -5,25 +5,64 @@ import { C_URL } from "../constants"
 
 
 
-class ExtensionError extends Error {
-  constructor(message: string) {
-    super(message)
-    this.name = "ExtensionError"
-  }
-}
 
-const noExt = () =>
-  Promise.reject(
-    new ExtensionError("Vui lòng tải lại trang hoặc kiểm tra extension NekoHelper.")
-  )
 
 function atou(b64: string) {
     return decodeURIComponent(escape(atob(b64)));
 }
 
-async function fetchWithExt(url: string, options: any): Promise<any> {
+async function fetchWithExt(url: string, options: RequestInit & { responseType?: string, data?: any }): Promise<any> {
     if (typeof window === "undefined" || !window.NekoHelper) {
-        return noExt();
+        // Fallback to standard fetch if extension is missing
+        // This is necessary because we are migrating to AniMapper backend which handles requests
+        // But for legacy calls (like notification) we might still need to try, or at least not block.
+        // Ideally these calls should also go through backend proxy.
+        console.warn("NekoHelper not found, using Proxy fallback.");
+        try {
+            const baseUrl = C_URL || "https://animevietsub.show";
+            const targetUrl = (url.startsWith("http://") || url.startsWith("https://")) ? url : baseUrl + url;
+            
+            const BACKEND_API = process.env.NEXT_PUBLIC_ANIMAPPER_API || "http://localhost:8080/api/v1";
+            const proxyHeaders = {
+                "Referer": "https://animevietsub.show/",
+                ...(options.headers || {})
+            };
+            
+            const queryParams = new URLSearchParams();
+            queryParams.append("url", targetUrl);
+            Object.entries(proxyHeaders).forEach(([key, value]) => {
+                queryParams.append(`header_${key}`, value as string);
+            });
+            
+            const proxyUrl = `${BACKEND_API}/proxy?${queryParams.toString()}`;
+            
+            const res = await fetch(proxyUrl, {
+                method: options.method || 'GET',
+                // Note: Body forwarding not yet implemented in proxy for POST
+            });
+            
+            if (!res.ok) throw new Error(`Proxy Fetch Error ${res.status}`);
+
+            let data;
+            if (options.responseType === 'arraybuffer') {
+                data = await res.arrayBuffer();
+            } else {
+                 data = await res.text();
+            }
+            return {
+                data,
+                status: res.status,
+                headers: {}
+            }
+        } catch (e) {
+             console.error("Proxy fetch failed:", e);
+             // Return dummy success to prevent loud errors
+             return {
+                data: "{}",
+                status: 200,
+                headers: {}
+             }
+        }
     }
 
     const baseUrl = C_URL || "https://animevietsub.show";

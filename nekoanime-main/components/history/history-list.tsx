@@ -47,7 +47,14 @@ export function HistoryList() {
                 <div className="flex items-center gap-2 mt-1 text-xs text-gray-400">
                     <span className="flex items-center gap-1">
                         <PlayCircle className="w-3 h-3" />
-                        Tập {item.episode}
+                         {(() => {
+                            const ep = item.episode;
+                            // Check if format is like slug$12345
+                            if (ep.includes('$')) {
+                                return "Tập mới"
+                            }
+                            return `Tập ${ep.replace(/^Tap\s+/i, "")}`
+                        })()}
                     </span>
                     {item.timestamp && (
                          <span className="flex items-center gap-1">

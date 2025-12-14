@@ -3,7 +3,6 @@ import type { Metadata } from "next";
 import { inter, caveat } from "@/lib/fonts";
 import "./globals.css";
 import { Sidebar } from "@/components/layout/sidebar";
-import { ExtensionCheck } from "@/components/layout/extension-check";
 import { Footer } from "@/components/layout/footer";
 import { NotificationManager } from "@/components/notification/notification-manager";
 
@@ -25,10 +24,8 @@ export default function RootLayout({
         <NotificationManager />
         <Sidebar />
         <main className="flex-1 ml-[calc(80px)] lg:ml-[250px] transition-all duration-300 p-6 lg:p-10 relative z-10">
-            <ExtensionCheck>
-              {children}
-              <Footer />
-            </ExtensionCheck>
+            {children}
+            <Footer />
         </main>
 
         {/* Background Ambient Effects */}

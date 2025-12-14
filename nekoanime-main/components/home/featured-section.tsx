@@ -1,9 +1,10 @@
 "use client"
 
-import { GlassPanel } from "@/components/ui/glass-panel"
+
 import { Play, Star } from "lucide-react"
 import Link from "next/link"
 import { AnimeItem } from "@/lib/api/parser"
+import { getProxiedImageUrl } from "@/lib/utils"
 
 interface FeaturedSectionProps {
     data: {
@@ -29,16 +30,18 @@ export function FeaturedSection({ data }: FeaturedSectionProps) {
                     <Link key={i} href={anime.path || "#"} className="group relative block">
                         <div className="aspect-[3/4] rounded-2xl overflow-hidden mb-3 relative">
                             <img
-                                src={anime.image}
+                                src={getProxiedImageUrl(anime.image) || "/placeholder.svg"}
                                 alt={anime.name}
                                 className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                                 loading="lazy"
                             />
                             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-60" />
 
-                            <div className="absolute top-2 right-2 bg-black/60 backdrop-blur-md px-2 py-1 rounded-lg text-xs font-medium text-white border border-white/10">
-                                {anime.chap}
-                            </div>
+                            {(anime.chap && anime.chap !== "0" && anime.chap !== "?" && anime.chap !== "???") ? (
+                                <div className="absolute top-2 right-2 bg-black/60 backdrop-blur-md px-2 py-1 rounded-lg text-xs font-medium text-white border border-white/10">
+                                    {anime.chap}
+                                </div>
+                            ) : null}
 
                             <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                                 <div className="w-12 h-12 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center border border-white/20 hover:bg-indigo-500 hover:border-indigo-500 transition-colors cursor-pointer">
@@ -73,7 +76,7 @@ export function FeaturedSection({ data }: FeaturedSectionProps) {
                     <Link key={i} href={anime.path || "#"} className="group relative block">
                         <div className="aspect-[3/4] rounded-2xl overflow-hidden mb-3 relative">
                              <img
-                                src={anime.image}
+                                src={getProxiedImageUrl(anime.image) || "/placeholder.svg"}
                                 alt={anime.name}
                                 className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                                 loading="lazy"

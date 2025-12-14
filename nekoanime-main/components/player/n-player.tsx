@@ -118,7 +118,27 @@ export function NPlayer({ episode, poster, seasonId, seasonName }: NPlayerProps)
     
     // Render logic
     const activeSource = sources[currentSourceIdx]
-    const isHls = activeSource?.type === 'hls' || (activeSource?.file && (activeSource.file.includes('.m3u8') || activeSource.file.startsWith('data:application/vnd.apple.mpegurl') || activeSource.file.startsWith('blob:')))
+    
+    // Handle raw M3U8 content
+    const [blobUrl, setBlobUrl] = useState<string | null>(null)
+    
+    useEffect(() => {
+        if (activeSource?.file.startsWith('#EXTM3U')) {
+            console.log("[Player] Detected raw M3U8 content, creating Blob URL");
+            const blob = new Blob([activeSource.file], { type: 'application/vnd.apple.mpegurl' });
+            const url = URL.createObjectURL(blob);
+            setBlobUrl(url);
+            return () => {
+                URL.revokeObjectURL(url);
+                setBlobUrl(null);
+            };
+        } else {
+            setBlobUrl(null);
+        }
+    }, [activeSource]);
+
+    const finalSrc = blobUrl || activeSource?.file
+    const isHls = activeSource?.type === 'hls' || (activeSource?.file && (activeSource.file.includes('.m3u8') || activeSource.file.startsWith('data:application/vnd.apple.mpegurl') || activeSource.file.startsWith('blob:') || activeSource.file.startsWith('#EXTM3U')))
 
     if (!episode) return null
 
@@ -142,8 +162,8 @@ export function NPlayer({ episode, poster, seasonId, seasonName }: NPlayerProps)
                 <div className="w-full h-full">
                     {isHls ? (
                         <HlsPlayer
-                            key={activeSource.file}
-                            src={activeSource.file}
+                            key={finalSrc /* Use finalSrc as key to force remount if blob changes */}
+                            src={finalSrc}
                             poster={poster}
                             onError={handlePlayerError}
                             onProgress={handleProgress}

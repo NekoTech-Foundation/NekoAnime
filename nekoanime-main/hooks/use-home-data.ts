@@ -1,7 +1,17 @@
-
 import { useState, useEffect } from "react"
-import { httpGet } from "@/lib/logic/http"
-import { parseHome, type AnimeItem, type ScheduleItem } from "@/lib/api/parser"
+import { animapperClient, type AniMapperAnimeData } from "@/lib/animapper-client"
+import { type AnimeItem, type ScheduleItem } from "@/lib/api/parser"
+
+function mapHomeItem(d: AniMapperAnimeData): AnimeItem {
+    return {
+        name: d.title,
+        image: d.poster || d.banner || "",
+        path: `/phim/${d.id}`,
+        views: d.views || 0,
+        rate: d.rate || 0,
+        chap: d.episodesReleased?.toString() || "?",
+    }
+}
 
 export function useHomeData() {
   const [data, setData] = useState<{
@@ -19,19 +29,20 @@ export function useHomeData() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const response = await httpGet("/")
-        // The scraping logic expects the full HTML of the homepage
-        // Note: C_URL + "/"
-
-        if (typeof response.data !== "string") {
-            throw new Error("Invalid response format")
-        }
-
-        const parsed = parseHome(response.data)
-        setData(parsed)
+        const homeData = await animapperClient.getHome()
+        
+        setData({
+             carousel: [], // Not supported yet
+             latestUpdate: homeData.latestUpdate.map(mapHomeItem),
+             nominate: homeData.nominate.map(mapHomeItem),
+             thisSeason: [], // Not supported
+             schedule: [], // Not supported
+             ranking: homeData.ranking.map(mapHomeItem),
+             preRelease: [] // Not supported
+        })
       } catch (err: unknown) {
         console.error(err)
-        setError("Failed to load data. Ensure Extension is active.")
+        setError("Failed to load home data via AniMapper.")
       } finally {
         setLoading(false)
       }

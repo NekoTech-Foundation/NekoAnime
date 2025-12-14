@@ -1,45 +1,29 @@
-import { get } from "@/lib/logic/http"
-import { parserDom, getInfoTPost, type AnimeItem } from "./parser"
-import { getPathName } from "./parser/helpers"
+import { animapperClient } from "@/lib/animapper-client"
+import { getProxiedImageUrl } from "@/lib/utils"
 
-export interface RankingItem extends AnimeItem {
-    process: string
+export interface RankingItem {
+    name: string
+    image: string
+    path: string
     othername: string
+    process: string
+    chap: string
+    views: number
+    rate: number
 }
 
 export async function getRanking(type: string = ""): Promise<RankingItem[]> {
-    const url = `/bang-xep-hang/${type}`
-    const { data: html } = await get(url)
-    const $ = parserDom(html)
+    // Default limit 20 as per requested logic in UI
+    const data = await animapperClient.getLeaderboard(type, 20)
     
-    // Check which selector matches based on the source logic
-    // desktop-web-main uses: .bxh-movie-phimletv > .group
-    
-    return $(".bxh-movie-phimletv > .group")
-    .map((_i: number, item: any) => {
-      const $item = $(item)
-      
-      // Image
-      const image = $item.find("img").attr("src") || 
-                    $item.attr("style")?.match(/url\(['"]?(.*?)['"]?\)/)?.[1] || ""
-
-      const path = getPathName($item.find("a").attr("href") || "")
-      const name = $item.find("a").text().trim()
-      const othername = $item.find(".txt-info").text().trim()
-      
-      // The ranking page uses slightly different class for 'process' (view/rate/etc)
-      const process = $item.find(".score").text().trim()
-
-      return { 
-          path, 
-          image, 
-          name, 
-          othername, 
-          process,
-          chap: "", // Not explicitly shown in this list style usually
-          views: 0,
-          rate: 0
-      }
-    })
-    .toArray() as unknown as RankingItem[]
+    return data.map(item => ({
+        name: item.title,
+        image: getProxiedImageUrl(item.poster),
+        path: `/phim/${item.id}`,
+        othername: "", // Backend doesn't always return this in leaderboard list
+        process: item.rate ? `${item.rate} ⭐` : "???",
+        chap: item.episodesReleased?.toString() || "?",
+        views: item.views || 0,
+        rate: item.rate || 0
+    }))
 }

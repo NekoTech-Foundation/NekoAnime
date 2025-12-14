@@ -15,14 +15,6 @@ export function Spotlight({ items }: SpotlightProps) {
   const [current, setCurrent] = useState(0)
   const [direction, setDirection] = useState(0)
 
-  // Auto-play
-  useEffect(() => {
-    const timer = setInterval(() => {
-      nextSlide()
-    }, 6000)
-    return () => clearInterval(timer)
-  }, [current])
-
   const nextSlide = () => {
     setDirection(1)
     setCurrent((prev) => (prev + 1) % items.length)
@@ -32,6 +24,14 @@ export function Spotlight({ items }: SpotlightProps) {
     setDirection(-1)
     setCurrent((prev) => (prev - 1 + items.length) % items.length)
   }
+
+  // Auto-play
+  useEffect(() => {
+    const timer = setInterval(() => {
+      nextSlide()
+    }, 6000)
+    return () => clearInterval(timer)
+  }, [current])
 
   if (!items || items.length === 0) return null
 
@@ -95,9 +95,11 @@ export function Spotlight({ items }: SpotlightProps) {
               <span className="bg-pink-600 text-white text-[10px] font-bold px-2 py-0.5 rounded shadow-lg shadow-pink-600/20 uppercase tracking-wider">
                 HOT
               </span>
-              <span className="text-gray-300 text-[10px] font-medium bg-black/40 px-2 py-0.5 rounded border border-white/5 uppercase tracking-wide">
-                {item.chap || "UPDATE"}
-              </span>
+              {(item.chap && item.chap !== "0" && item.chap !== "?" && item.chap !== "???") ? (
+                  <span className="text-gray-300 text-[10px] font-medium bg-black/40 px-2 py-0.5 rounded border border-white/5 uppercase tracking-wide">
+                    {item.chap}
+                  </span>
+              ) : null}
             </div>
 
             <h1 className="text-3xl md:text-4xl font-bold text-white mb-3 drop-shadow-lg leading-tight line-clamp-1">

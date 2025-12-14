@@ -14,7 +14,7 @@ export function AnimeGrid({ items, className }: AnimeGridProps) {
     if (!items || items.length === 0) {
         return (
             <div className="text-center text-gray-400 py-12">
-                Không tìm thấy kết quả nào.
+                Đang tìm kiếm, chờ xíu he
             </div>
         )
     }

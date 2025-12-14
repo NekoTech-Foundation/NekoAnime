@@ -5,7 +5,7 @@ import Link from "next/link"
 import Image from "next/image"
 import { Star } from "lucide-react"
 import { AnimeItem } from "@/lib/api/parser/helpers"
-import { cn } from "@/lib/utils"
+import { cn, getProxiedImageUrl } from "@/lib/utils"
 
 interface AnimeCardProps {
     item: AnimeItem
@@ -23,7 +23,7 @@ export function AnimeCard({ item, className }: AnimeCardProps) {
         >
             {item.image && (
                 <Image
-                    src={item.image}
+                    src={getProxiedImageUrl(item.image)}
                     alt={item.name}
                     fill
                     className="object-cover transition-transform duration-500 group-hover:scale-110"
@@ -37,12 +37,15 @@ export function AnimeCard({ item, className }: AnimeCardProps) {
                     {item.name}
                 </h3>
                 <div className="flex justify-between items-center mt-1">
+
                     <p className="text-xs text-gray-400 truncate max-w-[70%]">
                         {item.othername || ""}
                     </p>
-                    <span className="text-[10px] bg-indigo-600 px-1.5 py-0.5 rounded text-white/90">
-                        {item.chap || item.process || "???"}
-                    </span>
+                    {(item.chap && item.chap !== "0" && item.chap !== "?" && item.chap !== "???") || (item.process && item.process !== "0" && item.process !== "?" && item.process !== "???") ? (
+                        <span className="text-[10px] bg-indigo-600 px-1.5 py-0.5 rounded text-white/90">
+                            {item.chap || item.process}
+                        </span>
+                    ) : null}
                 </div>
             </div>
             

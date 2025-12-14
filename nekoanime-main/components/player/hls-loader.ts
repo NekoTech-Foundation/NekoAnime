@@ -126,22 +126,54 @@ export class HlsExtensionLoader {
                 return;
             }
 
-            // 2. Fetch via Extension
-            // Wait for NekoHelper to be valid (max 5 seconds)
+            // 2. Fetch via Extension or Fallback
+            // Wait for NekoHelper to be valid (max 1 second)
             let attempts = 0;
-            while (typeof window.NekoHelper === 'undefined' && attempts < 50) {
-                if (attempts % 10 === 0) console.log(`[HlsLoader] Waiting for Extension... (${attempts}/50)`);
+            // Only wait if we haven't confirmed it's missing yet (optimization could be added here)
+            while (typeof window.NekoHelper === 'undefined' && attempts < 10) {
+                if (attempts === 0) console.log("[HlsLoader] Checking for Extension...");
                 await new Promise(resolve => setTimeout(resolve, 100)); // 100ms wait
                 attempts++;
             }
 
             if (typeof window.NekoHelper === 'undefined') {
-                 console.warn("[HlsLoader] NekoHelper Extension not found after waiting 5s!");
-                 throw new Error("NekoHelper Extension not found");
+                 console.log("[HlsLoader] NekoHelper Extension not found. Falling back to Proxy fetch.");
+                 // Fallback to proxy fetch
+                 const BACKEND_API = process.env.NEXT_PUBLIC_ANIMAPPER_API || "http://localhost:8080/api/v1";
+                 const params = new URLSearchParams();
+                 params.append("url", url);
+                 params.append("header_Referer", "https://animevietsub.show/");
+                 
+                 const proxyUrl = `${BACKEND_API}/proxy?${params.toString()}`;
+                 const response = await fetch(proxyUrl);
+                 if (!response.ok) throw new Error(`Fetch Error ${response.status}`);
+                 
+                 // Handle response data
+                 const buffer = await response.arrayBuffer();
+                 
+                 stats.tload = performance.now();
+                 stats.loaded = buffer.byteLength;
+                 stats.total = buffer.byteLength;
+                 stats.loading.end = performance.now();
+
+                 let data: ArrayBuffer | string = buffer;
+                 
+                 // Check context.responseType OR if it is a manifest/level/playlist request
+                 if (this.context.responseType === 'text') {
+                     data = new TextDecoder().decode(buffer);
+                 } else if (!this.context.responseType && !this.context.frag) {
+                     // Fallback: If no responseType and NOT a fragment, likely a manifest
+                     data = new TextDecoder().decode(buffer);
+                 }
+
+                 if (this.callbacks && this.context) {
+                     this.callbacks.onSuccess({ url: url, data: data }, stats, this.context);
+                 }
+                 return;
             }
 
             console.log("[HlsLoader] Fetching via NekoHelper:", url);
-
+            
             stats.tfirst = performance.now();
             stats.loading.first = performance.now();
 
@@ -199,7 +231,6 @@ export class HlsExtensionLoader {
             }
 
             if (this.callbacks && this.context) {
-                console.log("[HlsLoader] Success Stats:", JSON.stringify(stats));
                 this.callbacks.onSuccess({
                     url: response.url || url,
                     data: data
@@ -217,12 +248,12 @@ export class HlsExtensionLoader {
                     fatal: false,
                     url: url,
                     status: 404, // Default to 404 for handling generic extension errors
-                    statusText: "Extension Fetch Failed",
+                    statusText: "Fetch Failed",
                     networkDetails: {
                         status: 404,
                         url: url
                     },
-                    reason: err.message || "Extension Error"
+                    reason: err.message || "Fetch Error"
                 }, this.context, null);
             }
         }
