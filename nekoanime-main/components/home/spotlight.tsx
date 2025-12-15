@@ -92,7 +92,7 @@ export function Spotlight({ items }: SpotlightProps) {
             transition={{ delay: 0.2 }}
           >
             <div className="flex items-center gap-3 mb-2">
-              <span className="bg-pink-600 text-white text-[10px] font-bold px-2 py-0.5 rounded shadow-lg shadow-pink-600/20 uppercase tracking-wider">
+              <span className="bg-neko-primary text-white text-[10px] font-bold px-2 py-0.5 rounded shadow-lg shadow-neko-primary/20 uppercase tracking-wider">
                 HOT
               </span>
               {(item.chap && item.chap !== "0" && item.chap !== "?" && item.chap !== "???") ? (
@@ -107,14 +107,14 @@ export function Spotlight({ items }: SpotlightProps) {
             </h1>
             
             <p className="text-gray-200 line-clamp-3 mb-5 text-sm max-w-lg opacity-90 font-light leading-relaxed">
-             {item.description && item.description.length > 20 
+             {(item.description && item.description.length > 5) 
                 ? item.description 
                 : "Hãy cùng khám phá bộ anime hấp dẫn này ngay tại NekoAnime. Những tình tiết gay cấn và hình ảnh tuyệt đẹp đang chờ đón bạn."}
             </p>
 
             <div className="flex flex-wrap items-center gap-3">
               <Link href={item.path || "#"}>
-                <button className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-500 text-white px-6 py-2.5 rounded-lg font-bold transition-all shadow-lg shadow-indigo-600/30 hover:shadow-indigo-600/50 hover:-translate-y-0.5 active:scale-95 text-sm">
+                <button className="flex items-center gap-2 bg-neko-primary hover:opacity-90 text-white px-6 py-2.5 rounded-lg font-bold transition-all shadow-lg shadow-neko-primary/30 hover:shadow-neko-primary/50 hover:-translate-y-0.5 active:scale-95 text-sm">
                   <Play className="w-4 h-4 fill-current" />
                   Xem Ngay
                 </button>
@@ -152,7 +152,7 @@ export function Spotlight({ items }: SpotlightProps) {
          {items.map((_, idx) => (
              <div 
                 key={idx}
-                className={`w-2 h-2 rounded-full transition-all duration-300 ${idx === current ? "w-8 bg-indigo-500" : "bg-white/50"}`}
+                className={`w-2 h-2 rounded-full transition-all duration-300 ${idx === current ? "w-8 bg-neko-primary" : "bg-white/50"}`}
              />
          ))}
       </div>

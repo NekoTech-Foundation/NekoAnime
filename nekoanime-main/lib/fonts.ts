@@ -1,5 +1,5 @@
 
-import { Caveat, Inter } from "next/font/google"
+import { Caveat, Inter, Manrope } from "next/font/google"
 
 export const inter = Inter({
   subsets: ["latin"],
@@ -10,5 +10,11 @@ export const inter = Inter({
 export const caveat = Caveat({
   subsets: ["latin"],
   variable: "--font-caveat",
+  display: "swap",
+})
+
+export const manrope = Manrope({
+  subsets: ["latin"],
+  variable: "--font-manrope",
   display: "swap",
 })

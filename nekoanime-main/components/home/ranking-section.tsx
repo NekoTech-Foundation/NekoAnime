@@ -55,20 +55,15 @@ export function RankingSection({ data }: RankingSectionProps) {
                     <h4 className="font-medium text-white/90 text-sm line-clamp-1 group-hover:text-indigo-400 transition-colors mb-1">
                         {anime.name}
                     </h4>
-                    <div className="flex items-center gap-3 text-xs text-gray-400">
-                        <span className="flex items-center gap-1.5 bg-white/5 px-2 py-0.5 rounded-md">
-                            {/* Use anime.chap (Episode) instead of missing rate/views */}
-                             {(anime.chap && anime.chap !== "0" && anime.chap !== "?") ? (
-                                <>
-                                    <span className="w-1.5 h-1.5 rounded-full bg-indigo-500" />
-                                    {anime.chap.startsWith("Tập") ? anime.chap : `Tập ${anime.chap}`}
-                                </>
-                             ) : (
-                                <span className="opacity-50">Đang cập nhật</span>
-                             )}
-                        </span>
+                        {/* Episode Badge in Ranking */}
+                         {(anime.chap && anime.chap !== "0" && anime.chap !== "?" && anime.chap !== "???") ? (
+                            <span className="flex items-center gap-1.5 bg-white/10 px-2 py-0.5 rounded text-[10px] font-medium text-white/90 border border-white/5">
+                                 {anime.chap.startsWith("Tập") ? anime.chap : `Tập ${anime.chap}`}
+                            </span>
+                         ) : (
+                            <span className="opacity-50 text-[10px]">Đang cập nhật</span>
+                         )}
                     </div>
-                </div>
             </Link>
         ))}
       </div>
