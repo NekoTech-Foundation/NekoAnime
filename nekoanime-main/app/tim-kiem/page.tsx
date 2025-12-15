@@ -2,22 +2,16 @@
 
 import { GlassPanel } from "@/components/ui/glass-panel"
 import { SearchResult, getSearch } from "@/lib/api/search"
-import { useEffect, useState } from "react"
+import { useEffect, useState, Suspense } from "react"
 import Link from "next/link"
 import Image from "next/image"
 import { Search } from "lucide-react"
 import { useSearchParams } from "next/navigation"
 
-export default function SearchPage() {
+function SearchContent() {
   const searchParams = useSearchParams()
   // Support both ?q= (standard) and custom route /tim-kiem/keyword if we used dynamic segments
   // But here we are at /tim-kiem/page.tsx, so we likely use query params ?keyword or ?q
-  // Wait, the desktop app uses /tim-kiem/[keyword]. 
-  // Next.js static route /tim-kiem/page.tsx needs query param unless we move it to /tim-kiem/[keyword]/page.tsx
-  
-  // Since I created /tim-kiem/page.tsx, the user likely visits /tim-kiem?q=abc
-  // But to support the links from the site which might be /tim-kiem/abc, I should probably have created [keyword] folder.
-  // For now I'll support query param `q`.
   
   const query = searchParams.get("q") || searchParams.get("keyword") || ""
   
@@ -78,7 +72,7 @@ export default function SearchPage() {
 
             {data && !loading && (
                 <>
-                    <p className="text-gray-400 mb-4">Tìm thấy kết quả cho "{query}" ({data.curPage}/{data.maxPage} trang)</p>
+                    <p className="text-gray-400 mb-4">Tìm thấy kết quả cho &quot;{query}&quot; ({data.curPage}/{data.maxPage} trang)</p>
                     
                     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
                         {data.items.map((anime, i) => (
@@ -129,4 +123,12 @@ export default function SearchPage() {
         </GlassPanel>
     </div>
   )
+}
+
+export default function SearchPage() {
+    return (
+        <Suspense fallback={<div className="text-center py-20 text-gray-500">Đang tải...</div>}>
+            <SearchContent />
+        </Suspense>
+    )
 }

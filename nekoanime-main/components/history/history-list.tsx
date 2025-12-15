@@ -5,9 +5,10 @@ import { useEffect } from "react"
 import { PlayCircle, Clock } from "lucide-react"
 import { useAuthStore } from "@/hooks/useAuthStore"
 import Link from "next/link"
+import Image from "next/image"
 
 export function HistoryList() {
-  const { items, loading, hasMore, fetchPage, page, refresh, error } = useHistoryStore()
+  const { items, loading, refresh, error } = useHistoryStore()
   const isLogged = useAuthStore(s => s.isLogged())
 
   useEffect(() => {
@@ -34,12 +35,15 @@ export function HistoryList() {
             key={`${item.id}-${item.episode}`}
             className="group relative rounded-xl overflow-hidden aspect-[2/3] bg-white/5 border border-white/5 hover:border-indigo-500/50 transition-all"
           >
-             <img 
-                src={item.poster} 
-                alt={item.name} 
-                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                loading="lazy"
-             />
+             <div className="w-full h-full relative">
+                <Image 
+                    src={item.poster} 
+                    alt={item.name} 
+                    fill
+                    className="object-cover group-hover:scale-105 transition-transform duration-500"
+                    sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 20vw"
+                />
+             </div>
              <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/90 via-black/60 to-transparent p-4">
                 <h3 className="text-white font-medium line-clamp-2 group-hover:text-indigo-300 transition-colors">
                     {item.name}

@@ -3,6 +3,7 @@
 
 import { Play, Star } from "lucide-react"
 import Link from "next/link"
+import Image from "next/image"
 import { AnimeItem } from "@/lib/api/parser"
 import { getProxiedImageUrl } from "@/lib/utils"
 
@@ -29,11 +30,12 @@ export function FeaturedSection({ data }: FeaturedSectionProps) {
                 {data.latestUpdate.map((anime, i) => (
                     <Link key={i} href={anime.path || "#"} className="group relative block">
                         <div className="aspect-[3/4] rounded-2xl overflow-hidden mb-3 relative">
-                            <img
+                            <Image
                                 src={getProxiedImageUrl(anime.image) || "/placeholder.svg"}
                                 alt={anime.name}
-                                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                                loading="lazy"
+                                fill
+                                className="object-cover transition-transform duration-500 group-hover:scale-110"
+                                sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 20vw"
                             />
                             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-60" />
 
@@ -75,11 +77,12 @@ export function FeaturedSection({ data }: FeaturedSectionProps) {
                  {data.nominate.map((anime, i) => (
                     <Link key={i} href={anime.path || "#"} className="group relative block">
                         <div className="aspect-[3/4] rounded-2xl overflow-hidden mb-3 relative">
-                             <img
+                             <Image
                                 src={getProxiedImageUrl(anime.image) || "/placeholder.svg"}
                                 alt={anime.name}
-                                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                                loading="lazy"
+                                fill
+                                className="object-cover transition-transform duration-500 group-hover:scale-110"
+                                sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 20vw"
                             />
                             <div className="absolute top-2 left-2 bg-pink-600/80 backdrop-blur-md px-2 py-1 rounded-lg text-xs font-bold text-white shadow-lg">
                                 HOT

@@ -3,6 +3,7 @@
 import { GlassPanel } from "@/components/ui/glass-panel"
 import { AnimeItem } from "@/lib/api/parser"
 import Link from "next/link"
+import Image from "next/image"
 import { Trophy } from "lucide-react"
 import { getProxiedImageUrl } from "@/lib/utils"
 
@@ -40,11 +41,12 @@ export function RankingSection({ data }: RankingSectionProps) {
 
                 {/* Image */}
                 <div className="w-12 h-16 flex-shrink-0 rounded-lg overflow-hidden relative">
-                    <img 
+                    <Image 
                         src={getProxiedImageUrl(anime.image) || "/placeholder.svg"} 
                         alt={anime.name}
-                        className="w-full h-full object-cover"
-                        loading="lazy"
+                        fill
+                        className="object-cover"
+                        sizes="48px"
                     />
                 </div>
 

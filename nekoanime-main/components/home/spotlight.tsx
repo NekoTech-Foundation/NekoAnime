@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { Play, Info, ChevronLeft, ChevronRight } from "lucide-react"
 import { GlassPanel } from "@/components/ui/glass-panel"
@@ -15,15 +15,15 @@ export function Spotlight({ items }: SpotlightProps) {
   const [current, setCurrent] = useState(0)
   const [direction, setDirection] = useState(0)
 
-  const nextSlide = () => {
+  const nextSlide = useCallback(() => {
     setDirection(1)
     setCurrent((prev) => (prev + 1) % items.length)
-  }
+  }, [items.length])
 
-  const prevSlide = () => {
+  const prevSlide = useCallback(() => {
     setDirection(-1)
     setCurrent((prev) => (prev - 1 + items.length) % items.length)
-  }
+  }, [items.length])
 
   // Auto-play
   useEffect(() => {
@@ -31,7 +31,7 @@ export function Spotlight({ items }: SpotlightProps) {
       nextSlide()
     }, 6000)
     return () => clearInterval(timer)
-  }, [current])
+  }, [current, nextSlide])
 
   if (!items || items.length === 0) return null
 
