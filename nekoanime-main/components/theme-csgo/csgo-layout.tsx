@@ -128,58 +128,72 @@ export default function CSGOLayout({ children }: DashboardLayoutProps) {
         </div>
       </div>
 
-      <header className="hidden max-md:flex fixed top-0 left-0 right-0 z-50 bg-bg-sidebar h-16 items-center justify-between px-5 border-b border-white/5">
+      <header className="hidden max-md:flex fixed top-0 left-0 right-0 z-50 bg-bg-sidebar/90 backdrop-blur-md h-16 items-center justify-between px-5 border-b border-white/5 shadow-lg shadow-black/20 transition-all duration-300">
         <button
           onClick={() => setIsMobileMenuOpen(true)}
-          className="w-10 h-10 flex items-center justify-center text-white"
+          className="w-10 h-10 flex items-center justify-center text-white active:scale-90 transition-transform"
         >
           <Menu size={24} />
         </button>
-        <div className="w-8 h-8 bg-white text-black font-black text-lg flex items-center justify-center rounded-lg">
+        <div className="w-10 h-10 bg-white shadow-lg shadow-white/10 text-black font-black text-lg flex items-center justify-center rounded-xl">
           <IconSolid className="w-5 h-5" />
         </div>
-        <div className="w-10 h-10"></div>
+        <div className="w-10 h-10 flex items-center justify-center">
+            {/* Search Trigger or Profile Placeholder for mobile header right side? Keeping empty for balance for now but could put search here */}
+             <Search size={20} className="text-white/50" />
+        </div>
       </header>
       
       {isMobileMenuOpen && (
         <>
           <div
-            className="hidden max-md:block fixed inset-0 bg-black/60 z-[60]"
+            className="hidden max-md:block fixed inset-0 bg-black/80 z-[60] backdrop-blur-sm animate-in fade-in duration-200"
             onClick={() => setIsMobileMenuOpen(false)}
           ></div>
 
-          <aside className="hidden max-md:flex fixed left-0 top-0 bottom-0 w-64 bg-bg-sidebar z-[70] flex-col p-5">
-            <div className="flex items-center justify-between mb-10">
-              <div className="w-10 h-10 bg-white text-black font-black text-2xl flex items-center justify-center rounded-lg">
-                <IconSolid className="w-5 h-5" />
+          <aside className="hidden max-md:flex fixed left-0 top-0 bottom-0 w-[80vw] max-w-[300px] bg-bg-sidebar z-[70] flex-col p-6 shadow-2xl animate-in slide-in-from-left duration-300 border-r border-white/10">
+            <div className="flex items-center justify-between mb-8">
+              <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-white text-black font-black text-2xl flex items-center justify-center rounded-xl shadow-lg shadow-white/10">
+                    <IconSolid className="w-5 h-5" />
+                  </div>
+                  <span className="text-white font-bold text-xl tracking-wide">NekoAnime</span>
               </div>
               <button
                 onClick={() => setIsMobileMenuOpen(false)}
-                className="w-10 h-10 flex items-center justify-center text-white"
+                className="w-10 h-10 flex items-center justify-center text-white/70 hover:text-white bg-white/5 rounded-full"
               >
                 <X size={24} />
               </button>
             </div>
 
-            <nav className="flex flex-col gap-5 flex-1 overflow-y-auto">
+            <nav className="flex flex-col gap-2 flex-1 overflow-y-auto">
+              <div className="text-xs font-bold text-white/30 uppercase tracking-wider mb-2 px-3">Menu</div>
               {navLinks.map((link) => (
                 <Link
                     key={link.href}
                     href={link.href}
-                    className={`flex items-center gap-4 transition-colors duration-300 p-3 rounded-lg hover:bg-white/5 ${
-                        pathname === link.href ? "text-accent-primary" : "text-text-secondary hover:text-accent-primary"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className={`flex items-center gap-4 transition-all duration-300 p-3.5 rounded-xl ${
+                        pathname === link.href 
+                        ? "bg-neko-primary/10 text-neko-primary border border-neko-primary/20" 
+                        : "text-text-secondary hover:bg-white/5 hover:text-white"
                     }`}
                 >
-                    <link.icon size={24} />
-                    <span>{link.label}</span>
+                    <link.icon size={22} className={pathname === link.href ? "text-neko-primary" : "text-current"} />
+                    <span className="font-medium">{link.label}</span>
                 </Link>
               ))}
             </nav>
 
-            {isLogged() && user && (
-              <div className="p-4 border-t border-white/10 mt-auto">
-                <Link href={`/user/${uid() || 'me'}`} className="flex items-center gap-3 hover:bg-white/5 rounded-lg p-2 -m-2 transition-colors">
-                  <div className="w-12 h-12 rounded-full overflow-hidden bg-[#555] border-2 border-white/10">
+            {isLogged() && user ? (
+              <div className="pt-4 mt-auto border-t border-white/10">
+                <Link 
+                    href={`/user/${uid() || 'me'}`} 
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="flex items-center gap-3 bg-white/5 rounded-2xl p-3 border border-white/5 active:scale-95 transition-transform"
+                >
+                  <div className="w-10 h-10 rounded-full overflow-hidden bg-[#555] border border-white/10">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
                       src={user.avatar || 'https://avatars.steamstatic.com/fef49e7fa7e1997310d705b2a6158ff8dc1cdfeb_full.jpg'}
@@ -188,11 +202,28 @@ export default function CSGOLayout({ children }: DashboardLayoutProps) {
                     />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-white font-medium truncate">{user.name}</p>
-                    <p className="text-text-secondary text-sm">Neko Member</p>
+                    <p className="text-white font-bold text-sm truncate">{user.name}</p>
+                    <p className="text-neko-primary text-xs font-medium">Viên Đạn Bạc</p>
                   </div>
                 </Link>
+                
+                <button
+                    onClick={() => { logout(); setIsMobileMenuOpen(false); }}
+                    className="w-full mt-3 flex items-center justify-center gap-2 text-red-400 bg-red-400/10 hover:bg-red-400/20 py-2.5 rounded-xl text-sm font-medium transition-colors"
+                >
+                    <LogOut size={16} />
+                    <span>Đăng Xuất</span>
+                </button>
               </div>
+            ) : (
+                <div className="mt-auto">
+                    <button
+                        onClick={() => { setIsLoginModalOpen(true); setIsMobileMenuOpen(false); }}
+                        className="w-full bg-neko-primary text-white py-3 rounded-xl font-bold shadow-lg shadow-neko-primary/25 active:scale-95 transition-transform"
+                    >
+                        Đăng Nhập
+                    </button>
+                </div>
             )}
           </aside>
         </>

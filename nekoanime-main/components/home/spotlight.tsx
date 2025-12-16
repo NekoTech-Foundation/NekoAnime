@@ -102,11 +102,11 @@ export function Spotlight({ items }: SpotlightProps) {
               ) : null}
             </div>
 
-            <h1 className="text-3xl md:text-4xl font-bold text-white mb-3 drop-shadow-lg leading-tight line-clamp-1">
+            <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-white mb-2 md:mb-3 drop-shadow-lg leading-tight line-clamp-1">
               {item.name}
             </h1>
             
-            <p className="text-gray-200 line-clamp-3 mb-5 text-sm max-w-lg opacity-90 font-light leading-relaxed">
+            <p className="text-gray-200 line-clamp-2 md:line-clamp-3 mb-4 md:mb-5 text-xs md:text-sm max-w-lg opacity-90 font-light leading-relaxed">
              {(item.description && item.description.length > 5) 
                 ? item.description 
                 : "Hãy cùng khám phá bộ anime hấp dẫn này ngay tại NekoAnime. Những tình tiết gay cấn và hình ảnh tuyệt đẹp đang chờ đón bạn."}
@@ -114,15 +114,15 @@ export function Spotlight({ items }: SpotlightProps) {
 
             <div className="flex flex-wrap items-center gap-3">
               <Link href={item.path || "#"}>
-                <button className="flex items-center gap-2 bg-neko-primary hover:opacity-90 text-white px-6 py-2.5 rounded-lg font-bold transition-all shadow-lg shadow-neko-primary/30 hover:shadow-neko-primary/50 hover:-translate-y-0.5 active:scale-95 text-sm">
-                  <Play className="w-4 h-4 fill-current" />
+                <button className="flex items-center gap-2 bg-neko-primary hover:opacity-90 text-white px-4 py-2 md:px-6 md:py-2.5 rounded-lg font-bold transition-all shadow-lg shadow-neko-primary/30 hover:shadow-neko-primary/50 hover:-translate-y-0.5 active:scale-95 text-xs md:text-sm">
+                  <Play className="w-3 h-3 md:w-4 md:h-4 fill-current" />
                   Xem Ngay
                 </button>
               </Link>
               
               <Link href={item.path || "#"}>
-                <button className="flex items-center gap-2 bg-white/5 hover:bg-white/10 text-white px-5 py-2.5 rounded-lg font-medium transition-all border border-white/10 backdrop-blur-md hover:-translate-y-0.5 active:scale-95 text-sm">
-                  <Info className="w-4 h-4" />
+                <button className="flex items-center gap-2 bg-white/5 hover:bg-white/10 text-white px-4 py-2 md:px-5 md:py-2.5 rounded-lg font-medium transition-all border border-white/10 backdrop-blur-md hover:-translate-y-0.5 active:scale-95 text-xs md:text-sm">
+                  <Info className="w-3 h-3 md:w-4 md:h-4" />
                   Chi Tiết
                 </button>
               </Link>

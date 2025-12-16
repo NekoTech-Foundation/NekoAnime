@@ -52,10 +52,10 @@ export default function UserPage() {
       <motion.div 
          initial={{ opacity: 0, y: 20 }}
          animate={{ opacity: 1, y: 0 }}
-         className="bg-gradient-to-br from-violet-900/30 to-slate-950 rounded-[30px] p-6 shadow-xl border border-white/5"
+         className="bg-gradient-to-br from-violet-900/30 to-slate-950 rounded-[20px] md:rounded-[30px] p-4 md:p-6 shadow-xl border border-white/5"
       >
-        <div className="flex items-stretch gap-6 max-md:flex-col">
-          <div className="relative group">
+        <div className="flex flex-col md:flex-row items-center md:items-stretch gap-6">
+          <div className="relative group shrink-0">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={displayUser?.avatar || 'https://avatars.steamstatic.com/fef49e7fa7e1997310d705b2a6158ff8dc1cdfeb_full.jpg'}
@@ -67,8 +67,8 @@ export default function UserPage() {
               </div>
           </div>
           
-          <div className="flex-1 flex flex-col justify-center">
-            <h1 className="text-3xl font-bold mb-2 text-white">{displayUser?.name}</h1>
+          <div className="flex-1 flex flex-col justify-center items-center md:items-start text-center md:text-left">
+            <h1 className="text-2xl md:text-3xl font-bold mb-2 text-white">{displayUser?.name}</h1>
             <div className="flex items-center gap-4 text-sm text-white/70 mb-4">
                <span className="px-3 py-1 bg-white/5 rounded-full border border-white/10">Member</span>
                <span>Tham gia từ 2024</span>
